@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Data.Xml.Dom;
 using Windows.Foundation;
@@ -24,6 +25,9 @@ namespace GlobalApp
     {
         private const string TaskName = "TileUpdateBackgroundTask";
         private const string TaskAssemblyName = "TileUpdateBackgroundTask";
+
+        private const string AlarmTaskName = "AlarmBackgroundTask";
+        private const string AlarmAssemblyName = "AlarmBackgroundTask";
 
         public TileUpdate()
         {
@@ -56,7 +60,7 @@ namespace GlobalApp
             }
         }
 
-        private async void btnRegisterBackgroundTask_Click(object sender, RoutedEventArgs e)
+        private bool IsTaskRegistered(string taskName)
         {
             var taskRegistered = false;
 
@@ -68,6 +72,17 @@ namespace GlobalApp
                     break;
                 }
             }
+            return taskRegistered;
+        }
+
+        private async void btnRegisterBackgroundTask_Click(object sender, RoutedEventArgs e)
+        {
+            await RegisterTimerBackgroundTask(TaskName, TaskAssemblyName, 15);
+        }
+
+        private async Task RegisterTimerBackgroundTask(string taskName, string taskAssemblyName, uint interval)
+        { 
+            var taskRegistered = IsTaskRegistered(taskName);
 
             if (!taskRegistered)
             {
@@ -85,9 +100,9 @@ namespace GlobalApp
 
                 var builder = new BackgroundTaskBuilder();
 
-                builder.Name = TaskName;
-                builder.TaskEntryPoint = TaskAssemblyName + "." + TaskName;
-                builder.SetTrigger(new TimeTrigger(15, false));
+                builder.Name = taskName;
+                builder.TaskEntryPoint = taskAssemblyName + "." + taskName;
+                builder.SetTrigger(new TimeTrigger(interval, false));
 
                 builder.Register();
             }
@@ -118,7 +133,7 @@ namespace GlobalApp
             var scheduledNotifications = updater.GetScheduledToastNotifications();
             foreach (var scheduledNotification in scheduledNotifications)
             {
-                lbScheduledNotifications.Items.Add(scheduledNotification.DeliveryTime);
+                lbScheduledNotifications.Items.Add(scheduledNotification.DeliveryTime.ToString());
             }
         }
 
@@ -130,6 +145,12 @@ namespace GlobalApp
             {
                 updater.RemoveFromSchedule(scheduledNotification);
             }
+        }
+
+        private async void btnRegisterAlarmWatcher_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: change interval to at least 1 day
+            await RegisterTimerBackgroundTask(AlarmTaskName, AlarmAssemblyName, 15);
         }
     }
 }

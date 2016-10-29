@@ -1,10 +1,13 @@
-﻿using System;
+﻿using AlarmLibrary;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Windows.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -42,6 +45,7 @@ namespace GlobalApp
         {
             Frame.Navigate(typeof(AlarmSettingPage), new AlarmSetting()
             {
+                Id = AlarmSettings.Instance.GetNewId(),
                 State = AlarmSettingState.New,
                 Time = DateTime.Now.TimeOfDay // select current time by default
             });
@@ -57,6 +61,35 @@ namespace GlobalApp
             alarm.State = AlarmSettingState.Edit;
 
             Frame.Navigate(typeof(AlarmSettingPage), alarm);
+        }
+
+        private async void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+        {
+            throw new InvalidOperationException("Do not use this code anymore. CheckBox and Command are used now!");
+
+            try
+            {
+                var enableSwitch = sender as ToggleSwitch;
+                var alarm = enableSwitch.DataContext as AlarmSetting; // get alarm setting associated with ListViewItem (parent of switch)
+
+                var manager = new AlarmManager();
+                if (alarm.Enabled)
+                    manager.EnableAlarm(alarm);
+                else
+                    manager.DisableAlarm(alarm);
+            }
+            catch (Exception ex)
+            {
+                string message = $"There was a problem enabling/disabling alarm.{Environment.NewLine}Error: {ex.Message}.";
+                await new MessageDialog(message).ShowAsync();
+
+                
+            }
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            
         }
     }
 }

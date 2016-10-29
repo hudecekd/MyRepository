@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AlarmLibrary;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,19 +26,24 @@ namespace GlobalApp
     /// </summary>
     public sealed partial class AlarmSettingPage : Page
     {
-        private List<string> _audioFiles = new List<string>()
-        {
-            "piano.wav",
-            "01 - My Silver Lining (4).mp3"
-            };
+        private const string AudioFolderName = "Audio";
 
         public AlarmSettingPage()
         {
             this.InitializeComponent();
 
-            foreach (var file in _audioFiles)
+            InitializeAudioOptions();
+        }
+
+        private void InitializeAudioOptions()
+        {
+            cmbSounds.Items.Clear();
+
+            var localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            var audioFolder = localFolder.GetFolderAsync(AudioFolderName).AsTask().GetAwaiter().GetResult();
+            foreach (var audioFile in audioFolder.GetFilesAsync().AsTask().GetAwaiter().GetResult())
             {
-                cmbSounds.Items.Add(file);
+                cmbSounds.Items.Add(audioFile.Name);
             }
         }
 
@@ -50,6 +56,7 @@ namespace GlobalApp
             var setting = DataContext as AlarmSetting;
             setting.Time = tpTime.Time;
 
+            setting.DaysOfWeek = DayOfWeekType.None;
             if (chbMonday.IsChecked.Value) setting.DaysOfWeek = setting.DaysOfWeek | DayOfWeekType.Monday;
             if (chbTuesday.IsChecked.Value) setting.DaysOfWeek = setting.DaysOfWeek | DayOfWeekType.Tuesday;
             if (chbWednesday.IsChecked.Value) setting.DaysOfWeek = setting.DaysOfWeek | DayOfWeekType.Thursday;
@@ -58,6 +65,8 @@ namespace GlobalApp
             if (chbSaturday.IsChecked.Value) setting.DaysOfWeek = setting.DaysOfWeek | DayOfWeekType.Saturday;
             if (chbSunday.IsChecked.Value) setting.DaysOfWeek = setting.DaysOfWeek | DayOfWeekType.Sunday;
 
+            if (rbOnlyOnce.IsChecked.Value) setting.Occurrence = OccurrenceType.OnlyOnce;
+            if (rbRepeatedly.IsChecked.Value) setting.Occurrence = OccurrenceType.Repeatedly;
 
             if (setting.State == AlarmSettingState.New)
                 AlarmSettings.Instance.Alarms.Add(setting);
@@ -74,76 +83,76 @@ namespace GlobalApp
             Frame.GoBack();
         }
 
-        private string toastXml =
-@"
-<toast duration=""{2}"" scenario=""alarm"" launch=""app-defined-string"">
-  <visual>
-    <binding template=""ToastGeneric"" >
-      <text>Sample</text>
-      <text>This is a simple toast notification example</text>
-      <image placement=""AppLogoOverride"" src=""oneAlarm.png"" />
-    </binding>
-  </visual>
-  <actions>
-    <action content=""check"" arguments=""check"" imageUri=""check.png"" />
-    <action content= ""cancel"" arguments=""cancel"" />
-    <action activationType=""system"" arguments=""dismiss"" content="""" />
-  </actions>
-  <audio  src=""{0}"" loop=""{1}""/>
-</toast>
-";
+        //private void CreateNotification()
+        //{
+        //    var updater = TileUpdateManager.CreateTileUpdaterForApplication();
 
-        private void CreateNotification()
+        //    var file = cmbSounds.SelectedItem as string;
+        //    var fileUriStr = $"ms-appdata:///local/{AudioFolderName}/{file}"; // file is copied to local folder so we use different prefix
+        //    var durationStr = (chbDuration.IsChecked.HasValue && chbDuration.IsChecked.Value) ? "long" : "short";
+        //    var loopStr = (chbLoop.IsChecked.HasValue && chbLoop.IsChecked.Value ? "true" : "false");
+        //    var xmlString = string.Format(toastXml, fileUriStr, loopStr, durationStr);
+
+        //    var xml = new XmlDocument();
+        //    xml.LoadXml(xmlString);
+
+        //    var dateTime = dpDate.Date.Date.Add(tpTime.Time).ToUniversalTime();
+
+        //    //var toast = new ScheduledToastNotification(xml, new DateTimeOffset(DateTime.Now.AddSeconds(10).ToUniversalTime()));
+        //    var toast = new ScheduledToastNotification(xml, dateTime);
+
+        //    ToastNotificationManager.CreateToastNotifier().AddToSchedule(toast);
+        //}
+
+        
+
+        /// <summary>
+        /// Clears all toast nofitications.
+        /// For now it removes notifications for all alarms not just the one being modified!
+        /// </summary>
+        private void ClearAlarmsNotifications()
         {
-            var updater = TileUpdateManager.CreateTileUpdaterForApplication();
+            var updater = ToastNotificationManager.CreateToastNotifier();
+            var scheduledNotifications = updater.GetScheduledToastNotifications();
+            foreach (var scheduledNotification in scheduledNotifications)
+            {
+                updater.RemoveFromSchedule(scheduledNotification);
+            }
+        }
 
-            var file = cmbSounds.SelectedItem as string;
-            var fileUriStr = "ms-appdata:///" + file; // file is copied to local folder so we use different prefix
-            var durationStr = (chbDuration.IsChecked.HasValue && chbDuration.IsChecked.Value) ? "long" : "short";
-            var loopStr = (chbLoop.IsChecked.HasValue && chbLoop.IsChecked.Value ? "true" : "false");
-            var xmlString = string.Format(toastXml, fileUriStr, loopStr, durationStr);
-
-            var xml = new XmlDocument();
-            xml.LoadXml(xmlString);
-
-            var dateTime = dpDate.Date.Date.Add(tpTime.Time).ToUniversalTime();
-
-            //var toast = new ScheduledToastNotification(xml, new DateTimeOffset(DateTime.Now.AddSeconds(10).ToUniversalTime()));
-            var toast = new ScheduledToastNotification(xml, dateTime);
-
-            ToastNotificationManager.CreateToastNotifier().AddToSchedule(toast);
+        private void CreateAlarmNotification()
+        {
         }
 
         private async void btnCopyAudio_Click(object sender, RoutedEventArgs e)
         {
             var localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            var targetFolder = default(Windows.Storage.StorageFolder);
+            var targetItem = localFolder.TryGetItemAsync(AudioFolderName).AsTask().GetAwaiter().GetResult();
+            // folder (or file!!!) does not exist
+            if (targetItem == null)
+            {
+                targetFolder = localFolder.CreateFolderAsync(AudioFolderName).AsTask().GetAwaiter().GetResult();
+            }
+            else
+            {
+                targetFolder = targetItem as Windows.Storage.StorageFolder;
+            }
+
+            // copy files from package folder to target folder so we are able to play them in toasts.
             var installationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-            var assetsFolder = installationFolder.GetFolderAsync("Audio").AsTask().GetAwaiter().GetResult();
-            var files = assetsFolder.GetFilesAsync().AsTask().GetAwaiter().GetResult();
+            var srcFolder = installationFolder.GetFolderAsync(AudioFolderName).AsTask().GetAwaiter().GetResult();
+            var files = srcFolder.GetFilesAsync().AsTask().GetAwaiter().GetResult();
             foreach (var file in files)
             {
-                await file.CopyAsync(localFolder, file.Name, Windows.Storage.NameCollisionOption.ReplaceExisting);
-            }
-            return;
-
-            foreach (var file in _audioFiles)
-            {
-                try
-                {
-                    var uriFile = new Uri("ms-appx:///Assets/" + file);
-                    Windows.Storage.StorageFile audioFile = await Windows.Storage.StorageFile.GetFileFromApplicationUriAsync(uriFile);
-                    await audioFile.CopyAsync(localFolder, audioFile.Name, Windows.Storage.NameCollisionOption.ReplaceExisting);
-                }
-                catch (Exception ex)
-                {
-                    await new MessageDialog(ex.Message).ShowAsync();
-                }
+                await file.CopyAsync(targetFolder, file.Name, Windows.Storage.NameCollisionOption.ReplaceExisting);
             }
         }
 
         private void btnCreateNotification_Click(object sender, RoutedEventArgs e)
         {
-            CreateNotification();
+            ClearAlarmsNotifications();
+            CreateAlarmNotification();
         }
 
         private void btnBack_Click(object sender, RoutedEventArgs e)
@@ -153,10 +162,17 @@ namespace GlobalApp
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            DataContext = e.Parameter;
+            var alarm = e.Parameter as AlarmSetting;
+            DataContext = alarm;
+
+            // set UI controls which are not bound
+            if (alarm.Occurrence == OccurrenceType.OnlyOnce) rbOnlyOnce.IsChecked = true;
+            if (alarm.Occurrence == OccurrenceType.Repeatedly) rbRepeatedly.IsChecked = true;
+
+            //cmbSounds.SelectedItem = alarm.AudioFilename;
 
             base.OnNavigatedTo(e);
-        }
+        }   
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
@@ -164,6 +180,18 @@ namespace GlobalApp
             AlarmSettings.Instance.Alarms.Remove(alarm);
 
             Frame.GoBack();
+        }
+
+        private void rbOnlyOnce_Checked(object sender, RoutedEventArgs e)
+        {
+            spOnlyOnce.Visibility = Visibility.Visible;
+            spRepeatedly.Visibility = Visibility.Collapsed;
+        }
+
+        private void rbRepeatedly_Checked(object sender, RoutedEventArgs e)
+        {
+            spOnlyOnce.Visibility = Visibility.Collapsed;
+            spRepeatedly.Visibility = Visibility.Visible;
         }
     }
 }

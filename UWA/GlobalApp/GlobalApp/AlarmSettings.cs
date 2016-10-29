@@ -1,11 +1,16 @@
-﻿using System;
+﻿using AlarmLibrary;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Windows.Data.Json;
+using Windows.Data.Xml.Dom;
+using Windows.UI.Notifications;
+using Windows.UI.Popups;
 
 namespace GlobalApp
 {
@@ -28,51 +33,41 @@ namespace GlobalApp
 
         public ObservableCollection<AlarmSetting> Alarms { get; private set; } = new ObservableCollection<AlarmSetting>();
 
+        public int GetNewId()
+        {
+            int id = 1;
+            // either fill space (when alarm was deleted and id is available)
+            // or get next highest one which is not used.
+            while (Alarms.Any(a => a.Id == id)) id++;
+            return id;
+        }
+
         public void SaveSettings()
         {
-            var alarmsJson = new Windows.Data.Json.JsonArray();
-            foreach (var alarm in Alarms)
-            {
-                var alarmJson = new Windows.Data.Json.JsonObject();
-                alarmJson["enabled"] = JsonValue.CreateStringValue(alarm.Enabled.ToString());
-                alarmJson["time"] = JsonValue.CreateStringValue(alarm.Time.Ticks.ToString());
-                alarmJson["daysOfWeek"] = JsonValue.CreateStringValue(((int)alarm.DaysOfWeek).ToString());
-
-                alarmsJson.Add(alarmJson);
-            }
-
-            // WARNING: maximum size can be 8KB!!!
-            Windows.Storage.ApplicationData.Current.LocalSettings.Values["Alarms"] = alarmsJson.Stringify();
+            // TODO: synchronize VM to base alarm settings
+            var settings = new BaseAlarmSettings();
+            settings.SaveSettings();
         }
 
         public void LoadSettings()
         {
-            var settingsStr = Windows.Storage.ApplicationData.Current.LocalSettings.Values["Alarms"] as string;
-            var alarmsJson = JsonValue.Parse(settingsStr).GetArray();
+            var settings = new BaseAlarmSettings();
+            settings.LoadSettings();
 
             Alarms.Clear();
-            foreach (var alarmJsonValue in alarmsJson)
+            foreach (var baseAlarm in settings.Alarms)
             {
-                var alarmJson = alarmJsonValue.GetObject();
                 var alarm = new AlarmSetting();
-                alarm.Enabled = Boolean.Parse(alarmJson["enabled"].GetString());
-                alarm.Time = new TimeSpan(long.Parse(alarmJson["time"].GetString()));
-                alarm.DaysOfWeek = (DayOfWeekType)int.Parse(alarmJson["daysOfWeek"].GetString());
+                alarm.Id = baseAlarm.Id;
+                alarm.Enabled = baseAlarm.Enabled;
+                alarm.Time = baseAlarm.Time;
+                alarm.DaysOfWeek = baseAlarm.DaysOfWeek;
+                alarm.AudioFilename = baseAlarm.AudioFilename;
+                alarm.Occurrence = baseAlarm.Occurrence;
 
                 Alarms.Add(alarm);
             }
         }
-    }
-
-    public enum DayOfWeekType
-    {
-        Monday = 1,
-        Tuesday = 1 << 2,
-        Wednesday = 1 << 4,
-        Thursday = 1 << 5,
-        Friday = 1 << 6,
-        Saturday = 1 << 7,
-        Sunday = 1 << 8
     }
 
     public enum AlarmSettingState
@@ -81,10 +76,29 @@ namespace GlobalApp
         Edit
     }
 
-    public class AlarmSetting : INotifyPropertyChanged
+    public class AlarmSetting : BaseAlarmSetting, INotifyPropertyChanged
     {
-        public TimeSpan Time { get; set; }
-        public DayOfWeekType DaysOfWeek { get; set; }
+        public ICommand EnableAlarmCommand { protected set; get; }
+
+        async void ExecuteDeleteCommand(object param)
+        {
+            try
+            {
+                var manager = new AlarmManager();
+                manager.DisableAlarm(this); // TODO: disable only this alarm not all!!!
+                if (Enabled) manager.EnableAlarm(this); // anable it when it should be (toasts will be updated = created again)
+            }
+            catch (Exception ex)
+            {
+                string message = $"There was a problem enabling/disabling alarm.{Environment.NewLine}Error: {ex.Message}";
+                await new MessageDialog(message).ShowAsync();
+            }
+        }
+
+        public AlarmSetting()
+        {
+            this.EnableAlarmCommand = new DelegateCommand(ExecuteDeleteCommand);
+        }
 
         public Windows.UI.Xaml.Visibility DeleteButtonVisibility
         {
@@ -103,67 +117,55 @@ namespace GlobalApp
         /// </summary>
         public AlarmSettingState State { get; set; }
 
-        private bool GetDayBoolean(DayOfWeekType dayOfWeek)
-        {
-            return (DaysOfWeek & dayOfWeek) == dayOfWeek;
-        }
-
-        private void SetDayBoolean(DayOfWeekType dayOfWeek, bool use)
-        {
-            if (use) DaysOfWeek |= dayOfWeek; else DaysOfWeek &= ~dayOfWeek;
-        }
-
-        public bool UseMonday
-        {
-            get { return GetDayBoolean(DayOfWeekType.Monday); }
-            set { SetDayBoolean(DayOfWeekType.Monday, value); }
-        }
-        public bool UseTuesday
-        {
-            get { return GetDayBoolean(DayOfWeekType.Tuesday); }
-            set { SetDayBoolean(DayOfWeekType.Tuesday, value); }
-        }
-        public bool UseThursday
-        {
-            get { return GetDayBoolean(DayOfWeekType.Thursday); }
-            set { SetDayBoolean(DayOfWeekType.Thursday, value); }
-        }
-        public bool UseWednesday
-        {
-            get { return GetDayBoolean(DayOfWeekType.Wednesday); }
-            set { SetDayBoolean(DayOfWeekType.Wednesday, value); }
-        }
-        public bool UseFriday
-        {
-            get { return GetDayBoolean(DayOfWeekType.Friday); }
-            set { SetDayBoolean(DayOfWeekType.Friday, value); }
-        }
-        public bool UseSaturday
-        {
-            get { return GetDayBoolean(DayOfWeekType.Saturday); }
-            set { SetDayBoolean(DayOfWeekType.Saturday, value); }
-        }
-        public bool UseSunday
-        {
-            get { return GetDayBoolean(DayOfWeekType.Sunday); }
-            set { SetDayBoolean(DayOfWeekType.Sunday, value); }
-        }
-
         private bool _enabled = false;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public bool Enabled
+        private bool CheckAlarmDateTime(DateTime dateTime)
         {
-            get { return _enabled; }
-            set
-            {
-                _enabled = value;
-
-                // TODO: logic
-                // TODO: only if it is changed by use not at initialization!
-                // TODO: or do logit at save or end of the application?
-            }
+            // do not schedule notification for date & time which has already passed
+            // WARNING: But there is still very small possibility that this can occur and
+            // we won't catch that.
+            return (dateTime >= DateTime.Now);
         }
+
+        private void CreateNotification(int alarmId, string audioFile, DateTime dateTime)
+        {
+            var updater = TileUpdateManager.CreateTileUpdaterForApplication();
+
+            var fileUriStr = $"ms-appdata:///local/{AudioFolderName}/{audioFile}"; // file is copied to local folder so we use different prefix
+            var durationStr = (false) ? "long" : "short";
+            var loopStr = (false ? "true" : "false");
+            var xmlString = string.Format(toastXml, fileUriStr, loopStr, durationStr);
+
+            var xml = new XmlDocument();
+            xml.LoadXml(xmlString);
+
+            var toast = new ScheduledToastNotification(xml, dateTime.ToUniversalTime());
+            toast.Id = alarmId.ToString(); // not unique. It is enouqh to identify alarm not "toast"
+
+            ToastNotificationManager.CreateToastNotifier().AddToSchedule(toast);
+        }
+
+        private const string AudioFolderName = "Audio";
+
+        private string toastXml =
+@"
+<toast duration=""{2}"" scenario=""alarm"" launch=""app-defined-string"">
+  <visual>
+    <binding template=""ToastGeneric"" >
+      <text>Sample</text>
+      <text>This is a simple toast notification example</text>
+      <image placement=""AppLogoOverride"" src=""oneAlarm.png"" />
+    </binding>
+  </visual>
+  <actions>
+    <action content=""check"" arguments=""check"" imageUri=""check.png"" />
+    <action content= ""cancel"" arguments=""cancel"" />
+    <action activationType=""system"" arguments=""dismiss"" content="""" />
+  </actions>
+  <audio  src=""{0}"" loop=""{1}""/>
+</toast>
+";
     }
 }

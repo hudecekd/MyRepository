@@ -17,6 +17,7 @@
         <Button x:Name="btnSeeScheduled" Content="See All Scheduled Notifications" HorizontalAlignment="Left" Margin="10,147,0,0" VerticalAlignment="Top" Click="btnSeeScheduled_Click"/>
         <ListBox x:Name="lbScheduledNotifications" HorizontalAlignment="Stretch" Height="100" Margin="10,184,10,0" VerticalAlignment="Top" />
         <Button x:Name="btnClearScheduled" Content="Clear" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="241,147,0,0" Click="btnClearScheduled_Click"/>
+        <Button x:Name="btnRegisterAlarmWatcher" Content="Register Alarm Watcher BT" HorizontalAlignment="Left" Margin="204,47,0,0" VerticalAlignment="Top" Click="btnRegisterAlarmWatcher_Click"/>
 
     </Grid>
 </UserControl>

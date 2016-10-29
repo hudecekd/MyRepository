@@ -19,13 +19,13 @@
                         <DataTemplate x:Key="AlarmSettingKey">
                             <StackPanel>
                                 <TextBlock Text="{Binding Time}" />
-                                <ToggleSwitch IsOn="{Binding Enabled, Mode=TwoWay}"  />
+                                <!--<ToggleSwitch IsOn="{Binding Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Toggled="ToggleSwitch_Toggled"  />-->
+                                <CheckBox Command="{Binding EnableAlarmCommand}" Content="Enabled" IsChecked="{Binding Enabled, Mode=TwoWay}" Checked="CheckBox_Checked" />
                             </StackPanel>
                         </DataTemplate>
                     </Grid.Resources>
                     <ListView ItemTemplate="{StaticResource AlarmSettingKey}" x:Name="lvAlarms" ItemsSource="{Binding}" SelectionChanged="lvAlarms_SelectionChanged">
                         <ListView.Resources>
-
                         </ListView.Resources>
 
                     </ListView>

@@ -25,6 +25,11 @@
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>
+        <Extension Category="windows.backgroundTasks" EntryPoint="AlarmBackgroundTask.AlarmBackgroundTask">
+          <BackgroundTasks>
+            <Task Type="timer" />
+          </BackgroundTasks>
+        </Extension>
         <Extension Category="windows.backgroundTasks" EntryPoint="TileUpdateBackgroundTask.TileUpdateBackgroundTask">
           <BackgroundTasks>
             <Task Type="timer" />
