@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<toast launch="app-defined-string">
+  <visual>
+    <binding template="ToastGeneric">
+      <text>Sample</text>
+      <text>This is a simple toast notification example</text>
+      <image placement="AppLogoOverride" src="oneAlarm.png" />
+    </binding>
+  </visual>
+  <actions>
+    <action content="check" arguments="check" imageUri="check.png" />
+    <action content="cancel" arguments="cancel" />
+  </actions>
+  <audio src="ms-winsoundevent:Notification.Reminder"/>
+</toast>

@@ -1,0 +1,36 @@
+﻿<UserControl
+    x:Class="GlobalApp.ClockUC"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GlobalApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="400"
+    d:DesignWidth="400" Loading="UserControl_Loading" Loaded="UserControl_Loaded">
+
+    <Grid Background="White">
+        <StackPanel Orientation="Horizontal">
+            <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="Current Date &amp; Time:" VerticalAlignment="Top"/>
+            <TextBlock x:Name="txtDateTime" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="Value" VerticalAlignment="Top" Height="20"/>
+        </StackPanel>
+        <Grid x:Name="gClock"  Margin="0,30,0,0">
+            <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="13" Margin="209,152,0,0" Stroke="Black" VerticalAlignment="Top" Width="136">
+                <Rectangle.RenderTransform>
+                <RotateTransform x:Name="rtClockSeconds" CenterX="-20" CenterY="7" Angle="0" />
+            </Rectangle.RenderTransform>
+            </Rectangle>
+            <Rectangle Fill="Green" HorizontalAlignment="Left" Height="13" Margin="209,152,0,0" Stroke="Black" VerticalAlignment="Top" Width="116">
+                <Rectangle.RenderTransform>
+                    <RotateTransform x:Name="rtClockMinutes" CenterX="-20" CenterY="7" Angle="0" />
+                </Rectangle.RenderTransform>
+            </Rectangle>
+            <Rectangle Fill="Red" HorizontalAlignment="Left" Height="13" Margin="209,152,0,0" Stroke="Black" VerticalAlignment="Top" Width="96">
+                <Rectangle.RenderTransform>
+                    <RotateTransform x:Name="rtClockHours" CenterX="-20" CenterY="7" Angle="0" />
+                </Rectangle.RenderTransform>
+            </Rectangle>
+            <Ellipse Fill="Red" HorizontalAlignment="Left" Height="15" Margin="181.5,151,0,0" Stroke="Black" VerticalAlignment="Top" Width="15"/>
+        </Grid>
+    </Grid>
+</UserControl>

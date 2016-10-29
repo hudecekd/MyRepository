@@ -1,0 +1,68 @@
+﻿<Page
+    x:Class="GlobalApp.AlarmSettingPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GlobalApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid Background="White">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Button x:Name="btnCreateNotification" Content="Create Notification" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="btnCreateNotification_Click" />
+                        <ComboBox x:Name="cmbSounds" HorizontalAlignment="Left" Margin="10,48,0,0" VerticalAlignment="Top" Width="380"/>
+                        <CheckBox x:Name="chbLoop" Content="Loop" HorizontalAlignment="Left" Margin="10,80,0,0" VerticalAlignment="Top"/>
+                        <CheckBox x:Name="chbDuration" Content="Duration" HorizontalAlignment="Left" Margin="10,112,0,0" VerticalAlignment="Top"/>
+                        <Button x:Name="btnCopyAudio" Content="Copy Audio" HorizontalAlignment="Left" Margin="161,11,0,0" VerticalAlignment="Top" Click="btnCopyAudio_Click" />
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <StackPanel Orientation="Vertical">
+                            <DatePicker x:Name="dpDate" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            <TimePicker x:Name="tpTime" Time="{Binding Time}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Grid.Row="2">
+                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Width="380">
+                            <CheckBox IsChecked="{Binding UseMonday}"  x:Name="chbMonday" Content="Monday" />
+                            <CheckBox IsChecked="{Binding UseTuesday}"  x:Name="chbTuesday" Content="Tuesday" />
+                            <CheckBox IsChecked="{Binding UseThursday}"  x:Name="chbWednesday" Content="Wednesday" />
+                            <CheckBox IsChecked="{Binding UseWednesday}"  x:Name="chbThursday" Content="Thursday" />
+                            <CheckBox IsChecked="{Binding UseFriday}"  x:Name="chbFriday" Content="Friday" />
+                            <CheckBox IsChecked="{Binding UseSaturday}"  x:Name="chbSaturday" Content="Saturday" />
+                            <CheckBox IsChecked="{Binding UseSunday}"  x:Name="chbSunday" Content="Sunday" />
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </Grid>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Button x:Name="btnSave" HorizontalAlignment="Right" VerticalAlignment="Center" Click="btnSave_Click">
+                    <SymbolIcon Symbol="Save" />
+                </Button>
+                <Button Grid.Column="1" x:Name="btnDelete" Visibility="{Binding DeleteButtonVisibility}" HorizontalAlignment="Right" Click="btnDelete_Click">
+                    <SymbolIcon Symbol="Delete" />
+                </Button>
+                <Button Grid.Column="2" x:Name="btnBack" HorizontalAlignment="Right" Click="btnBack_Click">
+                    <SymbolIcon Symbol="Back" />
+                </Button>
+            </Grid>
+        </Grid>
+    </Grid>
+</Page>

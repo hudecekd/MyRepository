@@ -1,0 +1,41 @@
+﻿<Page
+    x:Class="GlobalApp.AlarmMainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GlobalApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d" Loaded="Page_Loaded">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid Background="White">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid>
+                    <Grid.Resources>
+                        <DataTemplate x:Key="AlarmSettingKey">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Time}" />
+                                <ToggleSwitch IsOn="{Binding Enabled, Mode=TwoWay}"  />
+                            </StackPanel>
+                        </DataTemplate>
+                    </Grid.Resources>
+                    <ListView ItemTemplate="{StaticResource AlarmSettingKey}" x:Name="lvAlarms" ItemsSource="{Binding}" SelectionChanged="lvAlarms_SelectionChanged">
+                        <ListView.Resources>
+
+                        </ListView.Resources>
+
+                    </ListView>
+                </Grid>
+                <Grid Grid.Row="1" VerticalAlignment="Bottom">
+                    <Button x:Name="btnAddNew" HorizontalAlignment="Right" Click="btnAddNew_Click" >
+                        <SymbolIcon Symbol="Add" />
+                    </Button>
+                </Grid>
+            </Grid>
+    </Grid>
+            </Grid>
+</Page>
