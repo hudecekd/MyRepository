@@ -12,12 +12,9 @@ namespace AlarmBackgroundTask
     {
         public void Run(IBackgroundTaskInstance taskInstance)
         {
-            var settings = new BaseAlarmSettings();
-            settings.LoadSettings();
+            BaseAlarmSettings.Instance.LoadSettings();
 
-            var manager = new AlarmManager();
-
-            foreach (var alarm in settings.Alarms)
+            foreach (var alarm in BaseAlarmSettings.Instance.Alarms)
             {
                 if (!alarm.Enabled) continue; // no need to plan disabled alarms
 
@@ -25,7 +22,7 @@ namespace AlarmBackgroundTask
                 // when app is running so we do not need to check it
                 if (alarm.Occurrence == OccurrenceType.OnlyOnce) continue;
 
-                manager.PlanFutureAlarms(alarm);
+                AlarmManager.Instance.PlanFutureAlarms(alarm);
             }
         }
     }

@@ -26,35 +26,65 @@ namespace GlobalApp
     /// </summary>
     public sealed partial class AlarmSettingPage : Page
     {
-        private const string AudioFolderName = "Audio";
-
         public AlarmSettingPage()
         {
             this.InitializeComponent();
 
+            Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested += AlarmSettingPage_BackRequested;
+
             InitializeAudioOptions();
+        }
+
+        private void AlarmSettingPage_BackRequested(object sender, Windows.UI.Core.BackRequestedEventArgs e)
+        {
+            if (Frame.CanGoBack)
+            {
+                Frame.GoBack();
+                e.Handled = true;
+            }
         }
 
         private void InitializeAudioOptions()
         {
             cmbSounds.Items.Clear();
-
-            var localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
-            var audioFolder = localFolder.GetFolderAsync(AudioFolderName).AsTask().GetAwaiter().GetResult();
-            foreach (var audioFile in audioFolder.GetFilesAsync().AsTask().GetAwaiter().GetResult())
+            foreach (var audioFileName in AlarmManager.Instance.GetAudioFiles())
             {
-                cmbSounds.Items.Add(audioFile.Name);
+                cmbSounds.Items.Add(audioFileName);
             }
         }
 
-        private void btnSave_Click(object sender, RoutedEventArgs e)
+        private async void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            // validate
-            // add to manager
-            // navigate back
+            #region Validation
+            var settingVM = DataContext as AlarmSettingVM;
+            if (string.IsNullOrWhiteSpace( settingVM.AudioFilename))
+            {
+                await new MessageDialog("You have to select audio file.").ShowAsync();
+                return;
+            }
 
-            var setting = DataContext as AlarmSetting;
-            setting.Time = tpTime.Time;
+            // no day selected
+            if (settingVM.Repeatedly &&
+            (!chbMonday.IsChecked.Value) && (!chbTuesday.IsChecked.Value) && (!chbWednesday.IsChecked.Value) &&
+            (!chbThursday.IsChecked.Value) && (!chbFriday.IsChecked.Value) && (!chbSaturday.IsChecked.Value) &&
+            (!chbSunday.IsChecked.Value))
+            {
+                await new MessageDialog("You have to select at least one day").ShowAsync();
+                return;
+            }
+            #endregion  
+
+            // synchronize VM to Model
+            var setting = (settingVM.State == AlarmSettingState.New ? new BaseAlarmSetting() : BaseAlarmSettings.Instance.Alarms.Single(s => s.Id == settingVM.Id));
+
+            setting.Time = settingVM.Time;
+            setting.Enabled = settingVM.Enabled;
+            setting.AudioFilename = settingVM.AudioFilename;
+
+            if (rbOnlyOnce.IsChecked.Value) setting.Occurrence = OccurrenceType.OnlyOnce;
+            if (rbRepeatedly.IsChecked.Value) setting.Occurrence = OccurrenceType.Repeatedly;
+
+            setting.DateTimeOffset = settingVM.DateTimeOffset;
 
             setting.DaysOfWeek = DayOfWeekType.None;
             if (chbMonday.IsChecked.Value) setting.DaysOfWeek = setting.DaysOfWeek | DayOfWeekType.Monday;
@@ -65,94 +95,22 @@ namespace GlobalApp
             if (chbSaturday.IsChecked.Value) setting.DaysOfWeek = setting.DaysOfWeek | DayOfWeekType.Saturday;
             if (chbSunday.IsChecked.Value) setting.DaysOfWeek = setting.DaysOfWeek | DayOfWeekType.Sunday;
 
-            if (rbOnlyOnce.IsChecked.Value) setting.Occurrence = OccurrenceType.OnlyOnce;
-            if (rbRepeatedly.IsChecked.Value) setting.Occurrence = OccurrenceType.Repeatedly;
+            if (settingVM.State == AlarmSettingState.New)
+            {
+                setting.Id = settingVM.Id;
+                BaseAlarmSettings.Instance.Alarms.Add(setting);
 
-            if (setting.State == AlarmSettingState.New)
-                AlarmSettings.Instance.Alarms.Add(setting);
+                var alarmVM = new AlarmSettingVM();
+                alarmVM.Initialize(setting);
+                AlarmSettingsVM.Instance.Alarms.Add(alarmVM); // add VM for alarm
+            }
             else
             {
-                // TODO: Do i need to do something?
-                // It is already added to the collestion so there should be ne need
-                // to modify something.
-
-                // TODO: but what about cancel?
-                // Need to separate VM from data!!! Otherwise it will remain changed.
+                var alarmVM = AlarmSettingsVM.Instance.Alarms.Single(a => a.Id == setting.Id);
+                alarmVM.Initialize(setting);
             }
 
             Frame.GoBack();
-        }
-
-        //private void CreateNotification()
-        //{
-        //    var updater = TileUpdateManager.CreateTileUpdaterForApplication();
-
-        //    var file = cmbSounds.SelectedItem as string;
-        //    var fileUriStr = $"ms-appdata:///local/{AudioFolderName}/{file}"; // file is copied to local folder so we use different prefix
-        //    var durationStr = (chbDuration.IsChecked.HasValue && chbDuration.IsChecked.Value) ? "long" : "short";
-        //    var loopStr = (chbLoop.IsChecked.HasValue && chbLoop.IsChecked.Value ? "true" : "false");
-        //    var xmlString = string.Format(toastXml, fileUriStr, loopStr, durationStr);
-
-        //    var xml = new XmlDocument();
-        //    xml.LoadXml(xmlString);
-
-        //    var dateTime = dpDate.Date.Date.Add(tpTime.Time).ToUniversalTime();
-
-        //    //var toast = new ScheduledToastNotification(xml, new DateTimeOffset(DateTime.Now.AddSeconds(10).ToUniversalTime()));
-        //    var toast = new ScheduledToastNotification(xml, dateTime);
-
-        //    ToastNotificationManager.CreateToastNotifier().AddToSchedule(toast);
-        //}
-
-        
-
-        /// <summary>
-        /// Clears all toast nofitications.
-        /// For now it removes notifications for all alarms not just the one being modified!
-        /// </summary>
-        private void ClearAlarmsNotifications()
-        {
-            var updater = ToastNotificationManager.CreateToastNotifier();
-            var scheduledNotifications = updater.GetScheduledToastNotifications();
-            foreach (var scheduledNotification in scheduledNotifications)
-            {
-                updater.RemoveFromSchedule(scheduledNotification);
-            }
-        }
-
-        private void CreateAlarmNotification()
-        {
-        }
-
-        private async void btnCopyAudio_Click(object sender, RoutedEventArgs e)
-        {
-            var localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
-            var targetFolder = default(Windows.Storage.StorageFolder);
-            var targetItem = localFolder.TryGetItemAsync(AudioFolderName).AsTask().GetAwaiter().GetResult();
-            // folder (or file!!!) does not exist
-            if (targetItem == null)
-            {
-                targetFolder = localFolder.CreateFolderAsync(AudioFolderName).AsTask().GetAwaiter().GetResult();
-            }
-            else
-            {
-                targetFolder = targetItem as Windows.Storage.StorageFolder;
-            }
-
-            // copy files from package folder to target folder so we are able to play them in toasts.
-            var installationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-            var srcFolder = installationFolder.GetFolderAsync(AudioFolderName).AsTask().GetAwaiter().GetResult();
-            var files = srcFolder.GetFilesAsync().AsTask().GetAwaiter().GetResult();
-            foreach (var file in files)
-            {
-                await file.CopyAsync(targetFolder, file.Name, Windows.Storage.NameCollisionOption.ReplaceExisting);
-            }
-        }
-
-        private void btnCreateNotification_Click(object sender, RoutedEventArgs e)
-        {
-            ClearAlarmsNotifications();
-            CreateAlarmNotification();
         }
 
         private void btnBack_Click(object sender, RoutedEventArgs e)
@@ -162,7 +120,7 @@ namespace GlobalApp
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            var alarm = e.Parameter as AlarmSetting;
+            var alarm = e.Parameter as AlarmSettingVM;
             DataContext = alarm;
 
             // set UI controls which are not bound
@@ -171,13 +129,19 @@ namespace GlobalApp
 
             //cmbSounds.SelectedItem = alarm.AudioFilename;
 
+            // enable back button
+            Windows.UI.Core.SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = Windows.UI.Core.AppViewBackButtonVisibility.Visible;
+
             base.OnNavigatedTo(e);
         }   
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            var alarm = DataContext as AlarmSetting;
-            AlarmSettings.Instance.Alarms.Remove(alarm);
+            // update model
+            // for update of VM is responsible following page
+            var alarm = DataContext as AlarmSettingVM;
+            var setting = BaseAlarmSettings.Instance.Alarms.Single(s => s.Id == alarm.Id);
+            BaseAlarmSettings.Instance.Alarms.Remove(setting);
 
             Frame.GoBack();
         }

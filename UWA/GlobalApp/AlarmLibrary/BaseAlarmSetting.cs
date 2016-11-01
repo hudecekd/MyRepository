@@ -14,7 +14,7 @@ namespace AlarmLibrary
         /// </summary>
         public int Id { get; set; }
         public TimeSpan Time { get; set; }
-        public DayOfWeekType DaysOfWeek { get; set; }
+        public bool Enabled { get; set; }
 
         /// <summary>
         /// Name of the file to be played.
@@ -27,19 +27,10 @@ namespace AlarmLibrary
         /// <summary>
         /// Used only when <see cref="Occurrence"/> is equel to <see cref="OccurrenceType.OnlyOnce"/>.
         /// </summary>
-        public DateTime DateTime { get; set; }
+        public DateTimeOffset DateTimeOffset { get; set; }
 
-        public bool OnlyOnce
-        {
-            get { return Occurrence == OccurrenceType.OnlyOnce; }
-            set { Occurrence = (value ? OccurrenceType.OnlyOnce : OccurrenceType.Repeatedly); }
-        }
-
-        public bool Repeatedly
-        {
-            get { return Occurrence == OccurrenceType.Repeatedly; }
-            set { Occurrence = (value ? OccurrenceType.Repeatedly : OccurrenceType.OnlyOnce); }
-        }
+        #region Days of week
+        public DayOfWeekType DaysOfWeek { get; set; }
 
         protected bool GetDayBoolean(DayOfWeekType dayOfWeek)
         {
@@ -86,16 +77,6 @@ namespace AlarmLibrary
             get { return GetDayBoolean(DayOfWeekType.Sunday); }
             set { SetDayBoolean(DayOfWeekType.Sunday, value); }
         }
-
-        private bool _enabled = false;
-
-        public bool Enabled
-        {
-            get { return _enabled; }
-            set
-            {
-                _enabled = value;
-            }
-        }
+        #endregion
     }
 }

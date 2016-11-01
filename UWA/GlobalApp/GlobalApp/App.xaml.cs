@@ -15,6 +15,8 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
+using AlarmLibrary;
+
 namespace GlobalApp
 {
     /// <summary>
@@ -33,12 +35,85 @@ namespace GlobalApp
             this.EnteredBackground += Application_EnteredBackground;
             this.Resuming += App_Resuming;
 
-            AlarmSettings.Instance.LoadSettings();
+            AlarmManager.Instance.CopyAudioFiles();
+            AlarmManager.Instance.CopyImages();
+            BaseAlarmSettings.Instance.LoadSettings();
         }
 
         private void App_Resuming(object sender, object e)
         {
-            AlarmSettings.Instance.LoadSettings();
+            BaseAlarmSettings.Instance.LoadSettings();
+        }
+
+        protected async override void OnActivated(IActivatedEventArgs args)
+        {
+            // simulate start of app. Same as OnLaunched method.
+            OnLaunched2(ApplicationExecutionState.NotRunning, false, "");
+
+            try
+            {
+                if (args.Kind == ActivationKind.ToastNotification)
+                {
+                    var toastArgs = args as ToastNotificationActivatedEventArgs;
+                    var argumentParts = toastArgs.Argument.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+                    var argumentAction = argumentParts[0];
+                    var alarmId = int.Parse(argumentParts[1]);
+
+                    var rootFrame = Window.Current.Content as Frame;
+                    var content = rootFrame.Content;
+                    var mainPage = content as MainPage;
+                    mainPage.OpenAlarmSetting(alarmId);
+                }
+
+                base.OnActivated(args);
+            }
+            catch (Exception ex)
+            {
+                var message = ex.ToString().Substring(0, 1024);
+                await new Windows.UI.Popups.MessageDialog(message).ShowAsync();
+            }
+        }
+
+        private void OnLaunched2(ApplicationExecutionState previousExecutionState, bool prelaunchActivated, object arguments)
+        {
+#if DEBUG
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                this.DebugSettings.EnableFrameRateCounter = true;
+            }
+#endif
+            Frame rootFrame = Window.Current.Content as Frame;
+
+            // Do not repeat app initialization when the Window already has content,
+            // just ensure that the window is active
+            if (rootFrame == null)
+            {
+                // Create a Frame to act as the navigation context and navigate to the first page
+                rootFrame = new Frame();
+
+                rootFrame.NavigationFailed += OnNavigationFailed;
+
+                if (previousExecutionState == ApplicationExecutionState.Terminated)
+                {
+                    //TODO: Load state from previously suspended application
+                }
+
+                // Place the frame in the current Window
+                Window.Current.Content = rootFrame;
+            }
+
+            if (prelaunchActivated == false)
+            {
+                if (rootFrame.Content == null)
+                {
+                    // When the navigation stack isn't restored navigate to the first page,
+                    // configuring the new page by passing required information as a navigation
+                    // parameter
+                    rootFrame.Navigate(typeof(MainPage), arguments);
+                }
+                // Ensure the current window is active
+                Window.Current.Activate();
+            }
         }
 
         /// <summary>
@@ -110,7 +185,7 @@ namespace GlobalApp
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
 
-            AlarmSettings.Instance.SaveSettings();
+            BaseAlarmSettings.Instance.SaveSettings();
 
 
             deferral.Complete();

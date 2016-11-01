@@ -1,0 +1,42 @@
+﻿<UserControl
+    x:Class="GlobalApp.ApplicationInfo"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GlobalApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400" Loaded="UserControl_Loaded">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <TextBlock  Grid.Row="0" Grid.Column="0" Text="Device Form:" />
+            <TextBlock  Grid.Row="0" Grid.Column="2" x:Name="tbDeviceForm" HorizontalAlignment="Left" VerticalAlignment="Top" />
+
+            <TextBlock  Grid.Row="1" Grid.Column="0" Text="Device Family:" />
+            <TextBlock  Grid.Row="1" Grid.Column="2" x:Name="tbDeviceFamily" HorizontalAlignment="Left" VerticalAlignment="Top" />
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Device Family Version:" />
+            <TextBlock Grid.Row="2" Grid.Column="2"  x:Name="tbDeviceFamilyVersion" HorizontalAlignment="Left" VerticalAlignment="Top" />
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,20,0,0" Text="Package Version:" />
+            <TextBlock Grid.Row="3" Grid.Column="2" Margin="0,20,0,0"  x:Name="tbPackageVersion" HorizontalAlignment="Left" VerticalAlignment="Top" />
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Data Version:" />
+            <TextBlock Grid.Row="4" Grid.Column="2"  x:Name="tbDataVersion" HorizontalAlignment="Left" VerticalAlignment="Top" />
+        </Grid>
+    </Grid>
+</UserControl>

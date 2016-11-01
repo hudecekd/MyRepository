@@ -19,7 +19,7 @@
     <PackageCertificateKeyFile>GlobalApp_TemporaryKey.pfx</PackageCertificateKeyFile>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
-    <AppxBundlePlatforms>x64|arm</AppxBundlePlatforms>
+    <AppxBundlePlatforms>arm</AppxBundlePlatforms>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -104,19 +104,23 @@
     <Compile Include="AlarmSettingPage.xaml.cs">
       <DependentUpon>AlarmSettingPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="AlarmSettings.cs" />
-    <Compile Include="AlarmSettingUC.xaml.cs">
-      <DependentUpon>AlarmSettingUC.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="AlarmSettingsVM.cs" />
+    <Compile Include="AlarmSettingVM.cs" />
     <Compile Include="AlarmUC.xaml.cs">
       <DependentUpon>AlarmUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ApplicationInfo.xaml.cs">
+      <DependentUpon>ApplicationInfo.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="BadgeManager.cs" />
     <Compile Include="ClockUC.xaml.cs">
       <DependentUpon>ClockUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\Alarm\DaysToStringConverter.cs" />
+    <Compile Include="Converters\Alarm\OccurrenceToStringConverter.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -132,6 +136,9 @@
     <None Include="GlobalApp_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\BadgeLogo.scale-100.png" />
+    <Content Include="Assets\BadgeLogo.scale-200.png" />
+    <Content Include="Images\alarm.png" />
     <Content Include="Audio\01 - My Silver Lining %284%29.mp3" />
     <Content Include="Assets\alarmToast.xml" />
     <Content Include="Audio\piano.wav" />
@@ -145,6 +152,7 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -163,11 +171,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="AlarmSettingUC.xaml">
+    <Page Include="AlarmUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="AlarmUC.xaml">
+    <Page Include="ApplicationInfo.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

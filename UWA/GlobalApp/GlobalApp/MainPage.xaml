@@ -8,20 +8,25 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Pivot Title="Functionalities">
+        <Pivot x:Name="mainPivot" Title="Functionalities">
             <PivotItem Header="Clock">
                 <Grid>
                     <local:ClockUC />
                 </Grid>
             </PivotItem>
-            <PivotItem Header="None">
+            <PivotItem Header="Debug">
                 <Grid>
                     <local:TileUpdate />
                 </Grid>
             </PivotItem>
-            <PivotItem Header="Alarm">
+            <PivotItem x:Name="piAlarm" Header="Alarm">
                 <Grid>
                     <local:AlarmUC />
+                </Grid>
+            </PivotItem>
+            <PivotItem Header="App Info">
+                <Grid>
+                    <local:ApplicationInfo />
                 </Grid>
             </PivotItem>
         </Pivot>

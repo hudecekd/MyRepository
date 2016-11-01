@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AlarmLibrary;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,6 +26,26 @@ namespace GlobalApp
         public MainPage()
         {
             this.InitializeComponent();
+        }
+
+        public void OpenAlarmSetting(int alarmId)
+        {
+            this.mainPivot.SelectedItem = this.piAlarm;
+
+            // WARNING
+            // MV initialization is done when page is loaded
+            // so we cannot be sure that it is done when we 
+            // set the page this way.
+            // We should initialize all MV immediatelly and not when page
+            // is loaded???
+
+            var setting = BaseAlarmSettings.Instance.Alarms.Single(s => s.Id == alarmId);
+
+            var alarm = new AlarmSettingVM();
+            alarm.Initialize(setting);
+            alarm.State = AlarmSettingState.Edit;
+
+            Frame.Navigate(typeof(AlarmSettingPage), alarm);
         }
     }
 }

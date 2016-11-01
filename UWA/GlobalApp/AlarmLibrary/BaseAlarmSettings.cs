@@ -8,9 +8,23 @@ using Windows.Data.Json;
 
 namespace AlarmLibrary
 {
-    public class BaseAlarmSettings
+    public sealed class BaseAlarmSettings
     {
+        private static Lazy<BaseAlarmSettings> _instance { get; } = new Lazy<BaseAlarmSettings>(() => new BaseAlarmSettings());
+
+        /// <summary>
+        /// WARNING:
+        /// It is used by background task and UWA.
+        /// How singleton is handled in this scenario???
+        /// </summary>
+        public static BaseAlarmSettings Instance { get { return _instance.Value; } }
+
         public ObservableCollection<BaseAlarmSetting> Alarms { get; private set; } = new ObservableCollection<BaseAlarmSetting>();
+
+        private BaseAlarmSettings()
+        {
+
+        }
 
         public void SaveSettings()
         {
@@ -34,10 +48,18 @@ namespace AlarmLibrary
 
         public void LoadSettings()
         {
+            // TODO: setting versioning
+            Alarms.Clear();
+
+            // we are trying to load setting for the first time => there is nothing
+            // when versioning will be supported check mechanism should be better
+            // or someone delted the settings.dat file for example.
+            if (Windows.Storage.ApplicationData.Current.LocalSettings.Values.ContainsKey("Alarms") == false)
+                return;
+
             var settingsStr = Windows.Storage.ApplicationData.Current.LocalSettings.Values["Alarms"] as string;
             var alarmsJson = JsonValue.Parse(settingsStr).GetArray();
 
-            Alarms.Clear();
             foreach (var alarmJsonValue in alarmsJson)
             {
                 var alarmJson = alarmJsonValue.GetObject();

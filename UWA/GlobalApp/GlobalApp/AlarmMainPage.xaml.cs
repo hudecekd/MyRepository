@@ -28,27 +28,51 @@ namespace GlobalApp
         public AlarmMainPage()
         {
             this.InitializeComponent();
+
+            // initialize VM
+            AlarmSettingsVM.Instance.Alarms.Clear(); // occurs whenever we naviage to this page so we need to clear singleton
+            foreach (var setting in BaseAlarmSettings.Instance.Alarms)
+            {
+                var alarmVM = new AlarmSettingVM();
+                alarmVM.Initialize(setting);
+                AlarmSettingsVM.Instance.Alarms.Add(alarmVM);
+            }
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            lvAlarms.DataContext = AlarmSettings.Instance.Alarms;
+            lvAlarms.DataContext = AlarmSettingsVM.Instance.Alarms;
         }
 
         // TODO: maybe there is better place to "update" page?
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            // this page is the first one => disable back button
+            Windows.UI.Core.SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = Windows.UI.Core.AppViewBackButtonVisibility.Collapsed;
+
             base.OnNavigatedTo(e);
         }
 
-        private void btnAddNew_Click(object sender, RoutedEventArgs e)
+        private async void btnAddNew_Click(object sender, RoutedEventArgs e)
         {
-            Frame.Navigate(typeof(AlarmSettingPage), new AlarmSetting()
+            try
             {
-                Id = AlarmSettings.Instance.GetNewId(),
-                State = AlarmSettingState.New,
-                Time = DateTime.Now.TimeOfDay // select current time by default
-            });
+                // use only hours, minutes and seconds
+                var time = DateTime.Now.TimeOfDay;
+                time = time.Subtract(TimeSpan.FromTicks(time.Ticks % TimeSpan.TicksPerMinute)); // remove seconds, milliseconds
+
+                Frame.Navigate(typeof(AlarmSettingPage), new AlarmSettingVM()
+                {
+                    Id = AlarmSettingsVM.Instance.GetNewId(),
+                    State = AlarmSettingState.New,
+                    Time = time, // select current time by default
+                    DateTimeOffset = DateTimeOffset.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog(ex.ToString()).ShowAsync();
+            }
         }
 
         private void lvAlarms_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -57,39 +81,10 @@ namespace GlobalApp
             if (lvAlarms.SelectedItem == null)
                 return;
 
-            var alarm = lvAlarms.SelectedItem as AlarmSetting;
+            var alarm = lvAlarms.SelectedItem as AlarmSettingVM;
             alarm.State = AlarmSettingState.Edit;
 
             Frame.Navigate(typeof(AlarmSettingPage), alarm);
-        }
-
-        private async void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
-        {
-            throw new InvalidOperationException("Do not use this code anymore. CheckBox and Command are used now!");
-
-            try
-            {
-                var enableSwitch = sender as ToggleSwitch;
-                var alarm = enableSwitch.DataContext as AlarmSetting; // get alarm setting associated with ListViewItem (parent of switch)
-
-                var manager = new AlarmManager();
-                if (alarm.Enabled)
-                    manager.EnableAlarm(alarm);
-                else
-                    manager.DisableAlarm(alarm);
-            }
-            catch (Exception ex)
-            {
-                string message = $"There was a problem enabling/disabling alarm.{Environment.NewLine}Error: {ex.Message}.";
-                await new MessageDialog(message).ShowAsync();
-
-                
-            }
-        }
-
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            
         }
     }
 }

@@ -8,8 +8,91 @@ using Windows.UI.Notifications;
 
 namespace AlarmLibrary
 {
+    /// <summary>
+    /// Manages operations with alarm.
+    /// </summary>
     public class AlarmManager
     {
+        private static Lazy<AlarmManager> _instance { get; } = new Lazy<AlarmManager>(() => new AlarmManager());
+
+        /// <summary>
+        /// WARNING:
+        /// It is used by background task and UWA.
+        /// How singleton is handled in this scenario???
+        /// </summary>
+        public static AlarmManager Instance { get { return _instance.Value; } }
+
+        private AlarmManager()
+        {
+        }
+
+        public void CopyAudioFiles()
+        {
+            var localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            var targetFolder = default(Windows.Storage.StorageFolder);
+            var targetItem = localFolder.TryGetItemAsync(AudioFolderName).AsTask().GetAwaiter().GetResult();
+            // folder (or file!!!) does not exist
+            if (targetItem == null)
+            {
+                targetFolder = localFolder.CreateFolderAsync(AudioFolderName).AsTask().GetAwaiter().GetResult();
+            }
+            else
+            {
+                targetFolder = targetItem as Windows.Storage.StorageFolder;
+            }
+
+            // copy files from package folder to target folder so we are able to play them in toasts.
+            var installationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
+            var srcFolder = installationFolder.GetFolderAsync(AudioFolderName).AsTask().GetAwaiter().GetResult();
+            var files = srcFolder.GetFilesAsync().AsTask().GetAwaiter().GetResult();
+            foreach (var file in files)
+            {
+                file.CopyAsync(targetFolder, file.Name, Windows.Storage.NameCollisionOption.ReplaceExisting)
+                    .AsTask().GetAwaiter().GetResult();
+            }
+        }
+
+        public void CopyImages()
+        {
+            var localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            var targetFolder = default(Windows.Storage.StorageFolder);
+            var targetItem = localFolder.TryGetItemAsync(ImagesFolderName).AsTask().GetAwaiter().GetResult();
+            // folder (or file!!!) does not exist
+            if (targetItem == null)
+            {
+                targetFolder = localFolder.CreateFolderAsync(ImagesFolderName).AsTask().GetAwaiter().GetResult();
+            }
+            else
+            {
+                targetFolder = targetItem as Windows.Storage.StorageFolder;
+            }
+
+            // copy files from package folder to target folder so we are able to play them in toasts.
+            var installationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
+            var srcFolder = installationFolder.GetFolderAsync(ImagesFolderName).AsTask().GetAwaiter().GetResult();
+            var files = srcFolder.GetFilesAsync().AsTask().GetAwaiter().GetResult();
+            foreach (var file in files)
+            {
+                file.CopyAsync(targetFolder, file.Name, Windows.Storage.NameCollisionOption.ReplaceExisting)
+                    .AsTask().GetAwaiter().GetResult();
+            }
+        }
+
+        public IEnumerable<string> GetAudioFiles()
+        {
+            var localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+
+            // WARNING: hot fix. When folder does not exists on mobile yet exception is thrown
+            // Folder should be created before it is used!!!
+            // So files should be copied there before accessing it.
+            var audioFolderItem = localFolder.TryGetItemAsync(AudioFolderName).AsTask().GetAwaiter().GetResult();
+            if (audioFolderItem == null) return new string[0];
+
+            var audioFolder = localFolder.GetFolderAsync(AudioFolderName).AsTask().GetAwaiter().GetResult();
+            return audioFolder.GetFilesAsync()
+                .AsTask().GetAwaiter().GetResult()
+                .Select(f => f.Name);
+        }
 
         private bool CheckAlarmDateTime(DateTime dateTime)
         {
@@ -25,10 +108,10 @@ namespace AlarmLibrary
             {
                 if (alarm.Occurrence == OccurrenceType.OnlyOnce)
                 {
-                    var dateTime = alarm.DateTime.Add(alarm.Time);
-                    if (!CheckAlarmDateTime(dateTime)) return;
+                    var dateTime = alarm.DateTimeOffset.Add(alarm.Time);
+                    if (!CheckAlarmDateTime(dateTime.Date)) return;
 
-                    CreateNotification(alarm.Id, alarm.AudioFilename, dateTime.ToUniversalTime());
+                    CreateNotification(alarm.Id, alarm.AudioFilename, dateTime.Date.ToUniversalTime());
                 }
                 else // repeatedly is checked
                 {
@@ -43,6 +126,11 @@ namespace AlarmLibrary
             }
         }
 
+        /// <summary>
+        /// Plans future alarms.
+        /// If it is already planned then nothing happens.
+        /// </summary>
+        /// <param name="alarm"></param>
         public void PlanFutureAlarms(BaseAlarmSetting alarm)
         {
             // get already planned toasts for this alarm
@@ -87,12 +175,19 @@ namespace AlarmLibrary
             var fileUriStr = $"ms-appdata:///local/{AudioFolderName}/{audioFile}"; // file is copied to local folder so we use different prefix
             var durationStr = (false) ? "long" : "short";
             var loopStr = (false ? "true" : "false");
-            var xmlString = string.Format(toastXml, fileUriStr, loopStr, durationStr);
+            var xmlString = string.Format(toastXml,
+                fileUriStr, 
+                loopStr, 
+                durationStr,
+                alarmId);
 
             var xml = new XmlDocument();
             xml.LoadXml(xmlString);
 
-            var toast = new ScheduledToastNotification(xml, dateTime.ToUniversalTime());
+            var toast = new ScheduledToastNotification(xml,
+                dateTime.ToUniversalTime(),
+                TimeSpan.FromMinutes(1),
+                1);
             toast.Id = alarmId.ToString(); // not unique. It is enouqh to identify alarm not "toast"
             ToastNotificationManager.CreateToastNotifier().AddToSchedule(toast);
         }
@@ -121,20 +216,21 @@ namespace AlarmLibrary
         }
 
         private const string AudioFolderName = "Audio";
+        private const string ImagesFolderName = "Images";
 
         private string toastXml =
 @"
 <toast duration=""{2}"" scenario=""alarm"" launch=""app-defined-string"">
   <visual>
     <binding template=""ToastGeneric"" >
-      <text>Sample</text>
-      <text>This is a simple toast notification example</text>
-      <image placement=""AppLogoOverride"" src=""oneAlarm.png"" />
+      <text>Alarm</text>
+      <text>Wek up! Wake up!</text>
+      <image placement=""inline"" src=""ms-appdata:///local/Images/alarm.png"" />
     </binding>
   </visual>
   <actions>
-    <action content=""check"" arguments=""check"" imageUri=""check.png"" />
-    <action content= ""cancel"" arguments=""cancel"" />
+    <action content=""Configure Alarm"" arguments=""alarmAction;{3}"" imageUri=""check.png"" />
+    <action activationType=""system"" arguments=""snooze"" content="""" />
     <action activationType=""system"" arguments=""dismiss"" content="""" />
   </actions>
   <audio  src=""{0}"" loop=""{1}""/>

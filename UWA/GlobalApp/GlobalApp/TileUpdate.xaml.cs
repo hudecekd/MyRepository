@@ -152,5 +152,35 @@ namespace GlobalApp
             // TODO: change interval to at least 1 day
             await RegisterTimerBackgroundTask(AlarmTaskName, AlarmAssemblyName, 15);
         }
+
+        private void btnBadge_Click(object sender, RoutedEventArgs e)
+        {
+            XmlDocument badgeXml =   BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeGlyph);
+            XmlElement badgeElement = (XmlElement)badgeXml.SelectSingleNode("/badge");
+            badgeElement.SetAttribute("value", "alarm");
+            BadgeNotification badge = new BadgeNotification(badgeXml);
+            badge.ExpirationTime = DateTimeOffset.Now.AddMinutes(1);
+            BadgeUpdateManager.CreateBadgeUpdaterForApplication().Update(badge);
+        }
+
+        private void btnBadgeNumber_Click(object sender, RoutedEventArgs e)
+        {
+            XmlDocument badgeXml =
+ BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeNumber);
+            XmlElement badgeElement = (XmlElement)badgeXml.SelectSingleNode("/badge");
+            badgeElement.SetAttribute("value", "23");
+            BadgeNotification badge = new BadgeNotification(badgeXml);
+            BadgeUpdateManager.CreateBadgeUpdaterForApplication().Update(badge);
+        }
+
+        private void btnCleraBadge_Click(object sender, RoutedEventArgs e)
+        {
+            XmlDocument badgeXml =
+BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeNumber);
+            XmlElement badgeElement = (XmlElement)badgeXml.SelectSingleNode("/badge");
+            badgeElement.SetAttribute("value", "0");
+            BadgeNotification badge = new BadgeNotification(badgeXml);
+            BadgeUpdateManager.CreateBadgeUpdaterForApplication().Update(badge);
+        }
     }
 }

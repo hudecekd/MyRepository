@@ -8,7 +8,7 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid Background="White">
+        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
@@ -21,14 +21,12 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <Grid Grid.Row="0">
-                        <Button x:Name="btnCreateNotification" Content="Create Notification" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="btnCreateNotification_Click" />
-                        <ComboBox x:Name="cmbSounds" SelectedItem="{Binding AudioFilename,Mode=TwoWay}" HorizontalAlignment="Left" Margin="10,48,0,0" VerticalAlignment="Top" Width="380"/>
-                        <Button x:Name="btnCopyAudio" Content="Copy Audio" HorizontalAlignment="Left" Margin="161,11,0,0" VerticalAlignment="Top" Click="btnCopyAudio_Click" />
+                    <Grid Margin="0,0,0,10" Grid.Row="0">
+                        <ComboBox x:Name="cmbSounds" SelectedItem="{Binding AudioFilename,Mode=TwoWay}" HorizontalAlignment="Stretch" Margin="0" VerticalAlignment="Top" />
                     </Grid>
                     <Grid Grid.Row="1">
                         <StackPanel Orientation="Vertical">
-                            <TimePicker x:Name="tpTime" Time="{Binding Time}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            <TimePicker x:Name="tpTime" Time="{Binding Time, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                         </StackPanel>
                     </Grid>
                     <Grid Grid.Row="2">
@@ -43,9 +41,9 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <StackPanel x:Name="spOnlyOnce" Orientation="Horizontal">
-                                    <DatePicker x:Name="dpDate" Date="{Binding DateTime, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                    <DatePicker x:Name="dpDate" Date="{Binding DateTimeOffset, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                             </StackPanel>
-                            <StackPanel x:Name="spRepeatedly" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Width="380">
+                            <StackPanel x:Name="spRepeatedly" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" >
                                 <CheckBox IsChecked="{Binding UseMonday, Mode=TwoWay}"  x:Name="chbMonday" Content="Monday" />
                                 <CheckBox IsChecked="{Binding UseTuesday, Mode=TwoWay}"  x:Name="chbTuesday" Content="Tuesday" />
                                 <CheckBox IsChecked="{Binding UseThursday, Mode=TwoWay}"  x:Name="chbWednesday" Content="Wednesday" />
@@ -60,6 +58,11 @@
                 </Grid>
             </Grid>
             <Grid Grid.Row="1">
+                <Grid.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Padding" Value="10" />
+                    </Style>
+                </Grid.Resources>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition Width="Auto" />

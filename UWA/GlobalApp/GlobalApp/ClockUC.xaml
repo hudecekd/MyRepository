@@ -9,12 +9,12 @@
     d:DesignHeight="400"
     d:DesignWidth="400" Loading="UserControl_Loading" Loaded="UserControl_Loaded">
 
-    <Grid Background="White">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <StackPanel Orientation="Horizontal">
             <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="Current Date &amp; Time:" VerticalAlignment="Top"/>
             <TextBlock x:Name="txtDateTime" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="Value" VerticalAlignment="Top" Height="20"/>
         </StackPanel>
-        <Grid x:Name="gClock"  Margin="0,30,0,0">
+        <Grid x:Name="gClock"  Margin="0,50,0,0">
             <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="13" Margin="209,152,0,0" Stroke="Black" VerticalAlignment="Top" Width="136">
                 <Rectangle.RenderTransform>
                 <RotateTransform x:Name="rtClockSeconds" CenterX="-20" CenterY="7" Angle="0" />

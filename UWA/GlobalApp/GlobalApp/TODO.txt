@@ -1,0 +1,8 @@
+﻿- save setting when Suspend occurs otherwise all alarm settings
+  go missing for some reason.
+- save settings to roaming so I know how to use roaming correctly?
+- handle main back button
+- how to hide "back button" if we go from alarm not by back button but by selectin different tab???
+- navigation history is not correct when app is launched by toast so
+  back button does not work correctly! It does not return to "main alrm page"
+  but to "main page".
