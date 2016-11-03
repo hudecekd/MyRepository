@@ -24,6 +24,16 @@
                     <local:AlarmUC />
                 </Grid>
             </PivotItem>
+            <PivotItem x:Name="piSms" Header="SMS">
+                <Grid>
+                    <local:SmsMainPage />
+                </Grid>
+            </PivotItem>
+            <PivotItem x:Name="pigGps" Header="GPS">
+                <Grid>
+                    <local:GpsMainPage />
+                </Grid>
+            </PivotItem>
             <PivotItem Header="App Info">
                 <Grid>
                     <local:ApplicationInfo />

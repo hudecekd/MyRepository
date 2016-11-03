@@ -46,8 +46,8 @@
                             <StackPanel x:Name="spRepeatedly" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" >
                                 <CheckBox IsChecked="{Binding UseMonday, Mode=TwoWay}"  x:Name="chbMonday" Content="Monday" />
                                 <CheckBox IsChecked="{Binding UseTuesday, Mode=TwoWay}"  x:Name="chbTuesday" Content="Tuesday" />
-                                <CheckBox IsChecked="{Binding UseThursday, Mode=TwoWay}"  x:Name="chbWednesday" Content="Wednesday" />
-                                <CheckBox IsChecked="{Binding UseWednesday, Mode=TwoWay}"  x:Name="chbThursday" Content="Thursday" />
+                                <CheckBox IsChecked="{Binding UseWednesday, Mode=TwoWay}"  x:Name="chbWednesday" Content="Wednesday" />
+                                <CheckBox IsChecked="{Binding UseThursday, Mode=TwoWay}"  x:Name="chbThursday" Content="Thursday" />
                                 <CheckBox IsChecked="{Binding UseFriday, Mode=TwoWay}"  x:Name="chbFriday" Content="Friday" />
                                 <CheckBox IsChecked="{Binding UseSaturday, Mode=TwoWay}"  x:Name="chbSaturday" Content="Saturday" />
                                 <CheckBox IsChecked="{Binding UseSunday, Mode=TwoWay}"  x:Name="chbSunday" Content="Sunday" />

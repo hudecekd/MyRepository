@@ -12,12 +12,12 @@ namespace AlarmLibrary
         /// Used only to clear the enum. It has no other meaning.
         /// </summary>
         None = 0,
-        Monday = 1,
-        Tuesday = 1 << 2,
-        Wednesday = 1 << 4,
-        Thursday = 1 << 5,
-        Friday = 1 << 6,
-        Saturday = 1 << 7,
-        Sunday = 1 << 8
+        Monday = 1 << 0,
+        Tuesday = 1 << 1,
+        Wednesday = 1 << 2,
+        Thursday = 1 << 3,
+        Friday = 1 << 4,
+        Saturday = 1 << 5,
+        Sunday = 1 << 6
     }
 }
