@@ -14,6 +14,7 @@
                 <RowDefinition />
                 <RowDefinition />
                 <RowDefinition />
+                <RowDefinition />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -27,8 +28,10 @@
             <TextBlock Grid.Row="1" Grid.Column="2" x:Name="txtLastLocation" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Unknown Location" VerticalAlignment="Top" />
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Last Update:" HorizontalAlignment="Left" VerticalAlignment="Top" />
             <TextBlock Grid.Row="2" Grid.Column="2" x:Name="dtpLastUpdate" Text="Unknown Time" HorizontalAlignment="Left" VerticalAlignment="Top" />
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Currnet Speed:" HorizontalAlignment="Left" VerticalAlignment="Top" />
+            <TextBlock Grid.Row="3" Grid.Column="2" x:Name="txtCurrentSpeed" HorizontalAlignment="Left" VerticalAlignment="Top" />
         </Grid>
-        <ListBox x:Name="lbGpsHistory" HorizontalAlignment="Left" Margin="0,117,0,10" VerticalAlignment="Stretch" />
+        <ListBox x:Name="lbGpsHistory" HorizontalAlignment="Left" Margin="0,132,0,10" VerticalAlignment="Stretch" />
         
         
 

@@ -37,12 +37,28 @@ namespace GlobalApp
         private double _latitude;
         private double _longitude;
 
+        private BasicGeoposition _previousPoint;
+        private DateTime _previousDateTime;
+
         private async void Gl_PositionChanged(Geolocator sender, PositionChangedEventArgs args)
         {
             await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
             {
                 txtLocation.Text = "GPS:" + args.Position.Coordinate.Point.Position.Latitude.ToString("0.0000") + ", " + args.Position.Coordinate.Point.Position.Longitude.ToString("0.0000");
                 dtpLastUpdate.Text = DateTime.Now.ToString("MM.dd.yyyy hh:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+
+                var distance = GetDistance(_previousPoint, args.Position.Coordinate.Point.Position);
+                var currentDateTime = DateTime.Now;
+
+                // do not show speed for the first time
+                if (_previousDateTime != default(DateTime))
+                {
+                    var speed = GetSpeed(distance, _previousDateTime, currentDateTime);
+                    txtCurrentSpeed.Text = string.Format("{0:0.00} km/h", speed);
+                }
+
+                _previousDateTime = currentDateTime;
+                _previousPoint = args.Position.Coordinate.Point.Position;
 
                 if ((Math.Abs( args.Position.Coordinate.Point.Position.Latitude - _latitude) < 0.05) &&
                     (Math.Abs(args.Position.Coordinate.Point.Position.Longitude - _longitude) < 0.05))
@@ -76,6 +92,41 @@ namespace GlobalApp
             {
                 await new MessageDialog(ex.Message).ShowAsync();
             }
+        }
+
+        private double GetDistance(BasicGeoposition a, BasicGeoposition b)
+        {
+            var lat1 = a.Latitude * Math.PI / 180;
+            var lon1 = a.Longitude * Math.PI / 180;
+
+            var lat2 = a.Latitude * Math.PI / 180;
+            var lon2 = a.Longitude * Math.PI / 180;
+
+            double r = 6378100; // earth
+
+            double rho1 = r * Math.Cos(lat1);
+            double z1 = r * Math.Sin(lat1);
+            double x1 = rho1 * Math.Cos(lon1);
+            double y1 = rho1 * Math.Sin(lon1);
+
+            double rho2 = r * Math.Cos(lat2);
+            double z2 = r * Math.Sin(lat2);
+            double x2 = rho1 * Math.Cos(lon2);
+            double y2 = rho1 * Math.Sin(lon2);
+
+            var scalar = x1 * x2 + y1 * y2 + z1 * z2;
+            var absA = r;
+            var absB = r;
+            var cosAlpha = scalar / (absA * absB);
+            var Alpha = Math.Acos(cosAlpha);
+
+            return r * Alpha;
+        }
+
+        public double GetSpeed(double distance, DateTime start, DateTime end)
+        {
+            var deltaTime = end - start;
+            return distance / deltaTime.TotalSeconds * 3.6; // km/h
         }
     }
 }

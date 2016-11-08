@@ -94,6 +94,22 @@ namespace AlarmLibrary
                 .Select(f => f.Name);
         }
 
+        public IEnumerable<string> GetImageiles()
+        {
+            var localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+
+            // WARNING: hot fix. When folder does not exists on mobile yet exception is thrown
+            // Folder should be created before it is used!!!
+            // So files should be copied there before accessing it.
+            var audioFolderItem = localFolder.TryGetItemAsync(ImagesFolderName).AsTask().GetAwaiter().GetResult();
+            if (audioFolderItem == null) return new string[0];
+
+            var audioFolder = localFolder.GetFolderAsync(ImagesFolderName).AsTask().GetAwaiter().GetResult();
+            return audioFolder.GetFilesAsync()
+                .AsTask().GetAwaiter().GetResult()
+                .Select(f => f.Name);
+        }
+
         private bool CheckAlarmDateTime(DateTime dateTime)
         {
             // do not schedule notification for date & time which has already passed
@@ -111,7 +127,7 @@ namespace AlarmLibrary
                     var dateTime = alarm.DateTimeOffset.Add(alarm.Time);
                     if (!CheckAlarmDateTime(dateTime.Date)) return;
 
-                    CreateNotification(alarm.Id, alarm.AudioFilename, dateTime.Date.ToUniversalTime());
+                    CreateNotification(alarm.Id, alarm.AudioFilename, alarm.ImageFilename, dateTime.Date.ToUniversalTime());
                 }
                 else // repeatedly is checked
                 {
@@ -163,12 +179,12 @@ namespace AlarmLibrary
                     if (plannedToasts.Any(t => t.DeliveryTime == dateTime))
                         continue;
 
-                    CreateNotification(alarm.Id, alarm.AudioFilename, dateTime.ToUniversalTime());
+                    CreateNotification(alarm.Id, alarm.AudioFilename, alarm.ImageFilename, dateTime.ToUniversalTime());
                 }
             }
         }
 
-        private void CreateNotification(int alarmId, string audioFile, DateTime dateTime)
+        private void CreateNotification(int alarmId, string audioFile, string imageFile, DateTime dateTime)
         {
             var updater = TileUpdateManager.CreateTileUpdaterForApplication();
 
@@ -179,7 +195,8 @@ namespace AlarmLibrary
                 fileUriStr, 
                 loopStr, 
                 durationStr,
-                alarmId);
+                alarmId,
+                imageFile);
 
             var xml = new XmlDocument();
             xml.LoadXml(xmlString);
@@ -216,7 +233,10 @@ namespace AlarmLibrary
         }
 
         private const string AudioFolderName = "Audio";
-        private const string ImagesFolderName = "Images";
+        /// <summary>
+        /// TODO: access from different classes
+        /// </summary>
+        public const string ImagesFolderName = "Images";
 
         private string toastXml =
 @"
@@ -225,7 +245,7 @@ namespace AlarmLibrary
     <binding template=""ToastGeneric"" >
       <text>Alarm</text>
       <text>Wek up! Wake up!</text>
-      <image placement=""inline"" src=""ms-appdata:///local/Images/alarm.png"" />
+      <image placement=""inline"" src=""ms-appdata:///local/Images/{4}"" />
     </binding>
   </visual>
   <actions>

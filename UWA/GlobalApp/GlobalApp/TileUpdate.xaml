@@ -11,7 +11,7 @@
 
     <Grid  Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition />
+            <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
         <Grid.Resources>
@@ -30,10 +30,11 @@
         <Button x:Name="btnBadge" Content="Create Badge" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnBadge_Click"/>
         <Button x:Name="btnBadgeNumber" Content="Budge Number" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="btnBadgeNumber_Click"/>
         <Button x:Name="btnCleraBadge" Content="Clear Badge" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="btnCleraBadge_Click"/>
+        <Button x:Name="btnRegisterPushBT" Content="Register Push BT" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top" Click="btnRegisterPushBT_Click"/>
         </StackPanel>
         <Grid Grid.Row="1">
             <Button x:Name="btnSeeScheduled" Content="See All Scheduled Notifications" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnSeeScheduled_Click"/>
-            <ListBox x:Name="lbScheduledNotifications" HorizontalAlignment="Stretch"  Margin="0,37,0,0"  VerticalAlignment="Stretch" />
+            <ListBox x:Name="lbScheduledNotifications" HorizontalAlignment="Stretch"  Margin="0,40,0,0"  VerticalAlignment="Stretch" />
         </Grid>
     </Grid>
 </UserControl>

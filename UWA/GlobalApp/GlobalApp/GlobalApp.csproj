@@ -16,10 +16,11 @@
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>GlobalApp_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>GlobalApp_StoreKey.pfx</PackageCertificateKeyFile>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>arm</AppxBundlePlatforms>
+    <PackageCertificateThumbprint>8DF3E1C8E119BAEEB57E42DE1CEB6742456A26DB</PackageCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -92,6 +93,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <None Include="GlobalApp_StoreKey.pfx" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
@@ -128,6 +130,10 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PushNotificationsVM.cs" />
+    <Compile Include="PushNotificationsMainPage.xaml.cs">
+      <DependentUpon>PushNotificationsMainPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SmsMainPage.xaml.cs">
       <DependentUpon>SmsMainPage.xaml</DependentUpon>
     </Compile>
@@ -150,6 +156,7 @@
     <Content Include="Audio\piano.wav" />
     <Content Include="Assets\Wide310x150Logo.scale-100.png" />
     <Compile Include="DelegateCommand.cs" />
+    <None Include="Package.StoreAssociation.xml" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -197,6 +204,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="PushNotificationsMainPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="SmsMainPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -214,6 +225,10 @@
     <ProjectReference Include="..\AlarmLibrary\AlarmLibrary.csproj">
       <Project>{e7edf435-8039-41c1-93b3-d27c11380dce}</Project>
       <Name>AlarmLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PushNotificationsBackgroundTask\PushNotificationsBackgroundTask.csproj">
+      <Project>{8377fb60-0b69-4b18-b371-92930d94c13c}</Project>
+      <Name>PushNotificationsBackgroundTask</Name>
     </ProjectReference>
     <ProjectReference Include="..\TileUpdateBackgroundTask\TileUpdateBackgroundTask.csproj">
       <Project>{4d55d61b-6e0b-42ea-93e3-5d717899b7ed}</Project>

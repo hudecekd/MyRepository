@@ -43,6 +43,8 @@ namespace GlobalApp
         /// </summary>
         public string AudioFilename { get; set; }
 
+        public string ImageFilename { get; set; }
+
         public OccurrenceType Occurrence { get; set; }
 
         /// <summary>
@@ -152,6 +154,7 @@ namespace GlobalApp
             this.Time = setting.Time;
             this.DateTimeOffset = setting.DateTimeOffset;
             this.AudioFilename = setting.AudioFilename;
+            this.ImageFilename = setting.ImageFilename;
             this.Occurrence = setting.Occurrence;
 
             this.UseMonday = setting.UseMonday;

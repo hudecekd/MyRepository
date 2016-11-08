@@ -22,6 +22,8 @@ namespace AlarmLibrary
         /// </summary>
         public string AudioFilename { get; set; }
 
+        public string ImageFilename { get; set; }
+
         public OccurrenceType Occurrence { get; set; }
 
         /// <summary>

@@ -15,7 +15,13 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
+using Windows.Networking.PushNotifications;
+using Microsoft.WindowsAzure.Messaging;
+using Windows.UI.Popups;
+
 using AlarmLibrary;
+using System.Threading.Tasks;
+using Windows.Networking.Connectivity;
 
 namespace GlobalApp
 {
@@ -35,14 +41,87 @@ namespace GlobalApp
             this.EnteredBackground += Application_EnteredBackground;
             this.Resuming += App_Resuming;
 
+            // register push notifications
+            // first before connection check.
+            // TODO: improve this mechanism
+            Task.Factory.StartNew(() => InitNotificationsAsync().GetAwaiter().GetResult() ).Wait();
+            NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
+
             AlarmManager.Instance.CopyAudioFiles();
             AlarmManager.Instance.CopyImages();
             BaseAlarmSettings.Instance.LoadSettings();
         }
 
+        private void NetworkInformation_NetworkStatusChanged(object sender)
+        {
+            try
+            {
+                var connectionProfile = NetworkInformation.GetInternetConnectionProfile();
+                if (connectionProfile != null)
+                {
+                    if (connectionProfile.GetNetworkConnectivityLevel() == NetworkConnectivityLevel.InternetAccess)
+                    {
+                        var registered = InitNotificationsAsync().GetAwaiter().GetResult();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // TODO: handle exception
+            }
+        }
+
         private void App_Resuming(object sender, object e)
         {
             BaseAlarmSettings.Instance.LoadSettings();
+        }
+
+        private async Task<bool> InitNotificationsAsync()
+        {
+            var channel = await PushNotificationChannelManager.CreatePushNotificationChannelForApplicationAsync();
+
+            channel.PushNotificationReceived += Channel_PushNotificationReceived;
+
+            var hub = new NotificationHub("DusnaNH", "Endpoint=sb://dusnanhn.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=ERtJl2vJ/FAApBs7yyAM1kQhAVUM2tedNbeNu1vkPns=");
+            var result = await hub.RegisterNativeAsync(channel.Uri);
+
+            // Displays the registration ID so you know it was successful
+            if (result.RegistrationId != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private void Channel_PushNotificationReceived(PushNotificationChannel sender, PushNotificationReceivedEventArgs args)
+        {
+            args.Cancel = !PushNotificationsVM.PassToBackgroundTask;
+
+            var notificationVM = new PushNotificationVM();
+            notificationVM.DateTime = DateTime.Now;
+            notificationVM.Type = args.NotificationType;
+            switch (args.NotificationType)
+            {
+                case PushNotificationType.Raw:
+                    notificationVM.Notification = args.RawNotification.Content;
+                    break;
+                case PushNotificationType.Toast:
+                    var content = args.ToastNotification.Content.GetXml();
+                    if (content.Length > 100) content = content.Substring(0, 100);
+                    notificationVM.Notification = content;
+                    break;
+                default:
+                    // for now ignore other types
+                    break;
+            }
+
+            // WARNING: use or do not use await?
+            Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+             {
+                 if (PushNotificationsVM.Notifications.Count == 100)
+                     PushNotificationsVM.Notifications.RemoveAt(PushNotificationsVM.Notifications.Count - 1);
+                 PushNotificationsVM.Notifications.Insert(0, notificationVM);
+             });
         }
 
         protected async override void OnActivated(IActivatedEventArgs args)

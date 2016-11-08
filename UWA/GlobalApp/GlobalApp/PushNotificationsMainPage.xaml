@@ -1,0 +1,53 @@
+﻿<Page
+    x:Class="GlobalApp.PushNotificationsMainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GlobalApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.Resources>
+            <DataTemplate x:Key="pushItemKey">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="{Binding DateTimeText}" HorizontalAlignment="Left" />
+                    <TextBlock Grid.Column="1" Text="{Binding Type}" HorizontalAlignment="Left" />
+                    <TextBlock Grid.Column="2" Text="{Binding Notification}" HorizontalAlignment="Left" />
+                </Grid>
+            </DataTemplate>
+        </Grid.Resources>
+
+        <Grid HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <CheckBox x:Name="chbPassToBT" HorizontalAlignment="Left" VerticalAlignment="Top" Content="Pass to BT" Checked="chbPassToBT_Checked" Unchecked="chbPassToBT_Unchecked" />
+        </Grid>
+
+        <Grid Margin="0,37,0,0">
+            <Grid HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Date &amp; Time" HorizontalAlignment="Left" />
+            <TextBlock Grid.Column="1" Text="Type" HorizontalAlignment="Left" />
+            <TextBlock Grid.Column="2" Text="Content" HorizontalAlignment="Left" />
+        </Grid>
+        
+        <ListView x:Name="lvNotifications" ItemsSource="{Binding}" HorizontalAlignment="Stretch" Margin="0,25,0,10" VerticalAlignment="Stretch">
+            <ListView.ItemTemplate>
+                <StaticResource ResourceKey="pushItemKey" />
+            </ListView.ItemTemplate>
+        </ListView>
+        </Grid>
+    </Grid>
+</Page>

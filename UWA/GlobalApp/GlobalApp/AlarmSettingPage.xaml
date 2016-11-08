@@ -35,7 +35,8 @@
                                 <RadioButton x:Name="rbOnlyOnce" IsChecked="{Binding OnlyOnce}" Content="Only Once" Checked="rbOnlyOnce_Checked" />
                                 <RadioButton x:Name="rbRepeatedly" IsChecked="{Binding Repeatedly}" Content="Repeatedly" Checked="rbRepeatedly_Checked" />
                             </StackPanel>
-                        <Grid>
+                            <Button HorizontalAlignment="Left" VerticalAlignment="Top" Content="Select Image ..." x:Name="btnSelectImage" Click="btnSelectImage_Click" />
+                            <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
@@ -43,8 +44,19 @@
                             <StackPanel x:Name="spOnlyOnce" Orientation="Horizontal">
                                     <DatePicker x:Name="dpDate" Date="{Binding DateTimeOffset, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                             </StackPanel>
-                            <StackPanel x:Name="spRepeatedly" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" >
-                                <CheckBox IsChecked="{Binding UseMonday, Mode=TwoWay}"  x:Name="chbMonday" Content="Monday" />
+                                <StackPanel x:Name="spRepeatedly" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" >
+                                    <StackPanel.Resources>
+                                        <Style TargetType="CheckBox">
+                                            <Setter Property="Height" Value="40" />
+                                            <Setter Property="VerticalAlignment" Value="Top" />
+                                            <!--<Setter Property="RenderTransform">
+                                                <Setter.Value>
+                                                    <ScaleTransform ScaleX="2" ScaleY="2" />
+                                                </Setter.Value>
+                                            </Setter>-->
+                                        </Style>
+                                    </StackPanel.Resources>
+                                <CheckBox IsChecked="{Binding UseMonday, Mode=TwoWay}"  x:Name="chbMonday" Content="Monday"  />
                                 <CheckBox IsChecked="{Binding UseTuesday, Mode=TwoWay}"  x:Name="chbTuesday" Content="Tuesday" />
                                 <CheckBox IsChecked="{Binding UseWednesday, Mode=TwoWay}"  x:Name="chbWednesday" Content="Wednesday" />
                                 <CheckBox IsChecked="{Binding UseThursday, Mode=TwoWay}"  x:Name="chbThursday" Content="Thursday" />

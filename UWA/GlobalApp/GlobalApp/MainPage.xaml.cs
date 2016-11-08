@@ -13,6 +13,8 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.Networking.Connectivity;
+using System.Threading.Tasks;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -26,6 +28,50 @@ namespace GlobalApp
         public MainPage()
         {
             this.InitializeComponent();
+
+            // task so it won't hang up (because we wait for the Dispatcher.RunAsync!)
+            // and it would hang up on UI thread.
+            Task.Factory.StartNew(() => { UpdateConnectionStatus(); });
+            NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
+        }
+
+        private void NetworkInformation_NetworkStatusChanged(object sender)
+        {
+            UpdateConnectionStatus();
+        }
+
+        private void UpdateConnectionStatus()
+        { 
+            var text = string.Empty;
+            var connectionProfile = NetworkInformation.GetInternetConnectionProfile();
+            if (connectionProfile == null)
+            {
+                text = "Unknown";
+            }
+            else
+            {
+                var level = connectionProfile.GetNetworkConnectivityLevel();
+                switch (level)
+                {
+                    case NetworkConnectivityLevel.ConstrainedInternetAccess:
+                        text = "Constrained Internet Access";
+                        break;
+                    case NetworkConnectivityLevel.InternetAccess:
+                        text = "Internet Access";
+                        break;
+                    case NetworkConnectivityLevel.LocalAccess:
+                        text = "Local Access";
+                        break;
+                    case NetworkConnectivityLevel.None:
+                        text = "None";
+                        break;
+                }
+            }
+
+            Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                tbConnectionStatus.Text = text;
+            }).AsTask().GetAwaiter().GetResult();
         }
 
         public void OpenAlarmSetting(int alarmId)

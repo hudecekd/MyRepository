@@ -29,6 +29,9 @@ namespace GlobalApp
         private const string AlarmTaskName = "AlarmBackgroundTask";
         private const string AlarmAssemblyName = "AlarmBackgroundTask";
 
+        private const string PushTaskName = "PushNotificationsBackgroundTask";
+        private const string PushAssemblyName = "PushNotificationsBackgroundTask";
+
         public TileUpdate()
         {
             this.InitializeComponent();
@@ -108,6 +111,34 @@ namespace GlobalApp
             }
         }
 
+        private async Task RegisterPushBackgroundTask(string taskName, string taskAssemblyName)
+        {
+            var taskRegistered = IsTaskRegistered(taskName);
+
+            if (!taskRegistered)
+            {
+                //required call
+                var access = await BackgroundExecutionManager.RequestAccessAsync();
+
+                tbRegistration.Text = "";
+                //abort if access isn't granted
+                if (access == BackgroundAccessStatus.DeniedByUser || access == BackgroundAccessStatus.DeniedBySystemPolicy)
+                {
+                    tbRegistration.Text = "Denied";
+                    return;
+                }
+                tbRegistration.Text = "Allowed";
+
+                var builder = new BackgroundTaskBuilder();
+
+                builder.Name = taskName;
+                builder.TaskEntryPoint = taskAssemblyName + "." + taskName;
+                builder.SetTrigger(new PushNotificationTrigger());
+
+                builder.Register();
+            }
+        }
+
         private void btnUnregisterBackgroundTask_Click(object sender, RoutedEventArgs e)
         {
             var taskRegistration = BackgroundTaskRegistration.AllTasks.Values.SingleOrDefault(t => t.Name == TaskName);
@@ -181,6 +212,13 @@ BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeNumber);
             badgeElement.SetAttribute("value", "0");
             BadgeNotification badge = new BadgeNotification(badgeXml);
             BadgeUpdateManager.CreateBadgeUpdaterForApplication().Update(badge);
+        }
+
+        private async void btnRegisterPushBT_Click(object sender, RoutedEventArgs e)
+        {
+            btnRegisterPushBT.IsEnabled = false;
+            await RegisterPushBackgroundTask(PushTaskName, PushAssemblyName);
+            btnRegisterPushBT.IsEnabled = true;
         }
     }
 }

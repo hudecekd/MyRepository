@@ -53,6 +53,15 @@ namespace GlobalApp
             }
         }
 
+        private void InitializeImageOptions()
+        {
+            cmbSounds.Items.Clear();
+            foreach (var audioFileName in AlarmManager.Instance.GetImageiles())
+            {
+                cmbSounds.Items.Add(audioFileName);
+            }
+        }
+
         private async void btnSave_Click(object sender, RoutedEventArgs e)
         {
             #region Validation
@@ -80,6 +89,7 @@ namespace GlobalApp
             setting.Time = settingVM.Time;
             setting.Enabled = settingVM.Enabled;
             setting.AudioFilename = settingVM.AudioFilename;
+            setting.ImageFilename = settingVM.ImageFilename;
 
             if (rbOnlyOnce.IsChecked.Value) setting.Occurrence = OccurrenceType.OnlyOnce;
             if (rbRepeatedly.IsChecked.Value) setting.Occurrence = OccurrenceType.Repeatedly;
@@ -156,6 +166,52 @@ namespace GlobalApp
         {
             spOnlyOnce.Visibility = Visibility.Collapsed;
             spRepeatedly.Visibility = Visibility.Visible;
+        }
+
+        private async void btnSelectImage_Click(object sender, RoutedEventArgs e)
+        {
+            var picker = new Windows.Storage.Pickers.FileOpenPicker();
+            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
+            picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary;
+            picker.FileTypeFilter.Add(".jpg");
+            picker.FileTypeFilter.Add(".jpeg");
+            picker.FileTypeFilter.Add(".png");
+
+            Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();
+            if (file != null)
+            {
+                CopyImageToLocalImageFolder(file);
+
+                var alarm = DataContext as AlarmSettingVM;
+                alarm.ImageFilename = file.Name;
+            }
+            else
+            {
+                var alarm = DataContext as AlarmSettingVM;
+                alarm.ImageFilename = "alarm.png";
+            }
+        }
+
+        public void CopyImageToLocalImageFolder(Windows.Storage.StorageFile srtFile)
+        {
+            var localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            var targetFolder = default(Windows.Storage.StorageFolder);
+            var targetItem = localFolder.TryGetItemAsync(AlarmManager.ImagesFolderName).AsTask().GetAwaiter().GetResult();
+            // folder (or file!!!) does not exist
+            if (targetItem == null)
+            {
+                targetFolder = localFolder.CreateFolderAsync(AlarmManager.ImagesFolderName).AsTask().GetAwaiter().GetResult();
+            }
+            else
+            {
+                targetFolder = targetItem as Windows.Storage.StorageFolder;
+            }
+
+            // copy files from package folder to target folder so we are able to play them in toasts.
+            var installationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
+            
+                srtFile.CopyAsync(targetFolder, srtFile.Name, Windows.Storage.NameCollisionOption.ReplaceExisting)
+                    .AsTask().GetAwaiter().GetResult();
         }
     }
 }

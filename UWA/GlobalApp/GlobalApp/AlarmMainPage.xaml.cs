@@ -29,6 +29,11 @@ namespace GlobalApp
         {
             this.InitializeComponent();
 
+            //if (Windows.ApplicationModel.DesignMode.DesignModeEnabled)
+            //{
+            //    return;
+            //}
+
             // initialize VM
             AlarmSettingsVM.Instance.Alarms.Clear(); // occurs whenever we naviage to this page so we need to clear singleton
             foreach (var setting in BaseAlarmSettings.Instance.Alarms)
@@ -66,7 +71,8 @@ namespace GlobalApp
                     Id = AlarmSettingsVM.Instance.GetNewId(),
                     State = AlarmSettingState.New,
                     Time = time, // select current time by default
-                    DateTimeOffset = DateTimeOffset.Now
+                    DateTimeOffset = DateTimeOffset.Now,
+                    ImageFilename = "alarm.png"
                 });
             }
             catch (Exception ex)

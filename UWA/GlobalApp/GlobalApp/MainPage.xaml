@@ -8,7 +8,7 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Pivot x:Name="mainPivot" Title="Functionalities">
+        <Pivot x:Name="mainPivot" Title="Functionalities" Margin="0,0,0,20">
             <PivotItem Header="Clock">
                 <Grid>
                     <local:ClockUC />
@@ -22,6 +22,11 @@
             <PivotItem x:Name="piAlarm" Header="Alarm">
                 <Grid>
                     <local:AlarmUC />
+                </Grid>
+            </PivotItem>
+            <PivotItem x:Name="piPush" Header="Push">
+                <Grid>
+                    <local:PushNotificationsMainPage />
                 </Grid>
             </PivotItem>
             <PivotItem x:Name="piSms" Header="SMS">
@@ -40,6 +45,10 @@
                 </Grid>
             </PivotItem>
         </Pivot>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Height="20" VerticalAlignment="Bottom">
+            <TextBlock Text="Internet status:" Margin="0,0,10,0" />
+            <TextBlock x:Name="tbConnectionStatus" Text="Unknown" />
+        </StackPanel>
 
     </Grid>
 </Page>
