@@ -118,6 +118,7 @@
       <DependentUpon>ApplicationInfo.xaml</DependentUpon>
     </Compile>
     <Compile Include="BadgeManager.cs" />
+    <Compile Include="CenterOnPoint.cs" />
     <Compile Include="ClockUC.xaml.cs">
       <DependentUpon>ClockUC.xaml</DependentUpon>
     </Compile>
@@ -126,6 +127,7 @@
     <Compile Include="GpsMainPage.xaml.cs">
       <DependentUpon>GpsMainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="IBackButtonNavigation.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

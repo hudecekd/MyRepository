@@ -53,7 +53,7 @@ namespace GlobalApp
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             // this page is the first one => disable back button
-            Windows.UI.Core.SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = Windows.UI.Core.AppViewBackButtonVisibility.Collapsed;
+            //Windows.UI.Core.SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = Windows.UI.Core.AppViewBackButtonVisibility.Collapsed;
 
             base.OnNavigatedTo(e);
         }

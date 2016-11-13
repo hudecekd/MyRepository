@@ -6,10 +6,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    d:DesignHeight="500"
+    d:DesignHeight="700"
     d:DesignWidth="400">
 
-    <Grid  Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <ScrollViewer VerticalScrollBarVisibility="Visible">
+        <Grid  Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
@@ -39,7 +40,8 @@
         <Grid Grid.Row="1">
             <Button x:Name="btnSeeScheduled" Content="See All Scheduled Notifications" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnSeeScheduled_Click"/>
             <Button x:Name="btnSeeBTs" Margin="3,40,0,0" Content="See BTs" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnSeeBTs_Click" />
-            <ListBox x:Name="lbScheduledNotifications" HorizontalAlignment="Stretch"  Margin="0,77,0,0"  VerticalAlignment="Stretch" />
+            <ListBox x:Name="lbScheduledNotifications" Height="225" HorizontalAlignment="Stretch"  Margin="0,77,0,0"  VerticalAlignment="Top" />
         </Grid>
     </Grid>
+    </ScrollViewer>
 </UserControl>

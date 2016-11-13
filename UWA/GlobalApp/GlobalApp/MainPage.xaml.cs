@@ -33,6 +33,39 @@ namespace GlobalApp
             // and it would hang up on UI thread.
             Task.Factory.StartNew(() => { UpdateConnectionStatus(); });
             NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
+
+            Windows.UI.Core.SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = Windows.UI.Core.AppViewBackButtonVisibility.Visible;
+            Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested += AlarmSettingPage_BackRequested;
+        }
+
+
+        private void AlarmSettingPage_BackRequested(object sender, Windows.UI.Core.BackRequestedEventArgs e)
+        {
+            // for now we expect that pivot contains
+            // - Pivot items
+            // - items contain only grid
+            // - grid contains only one item
+            var pivotItem = mainPivot.SelectedItem as PivotItem;
+            if (pivotItem != null)
+            {
+                var grid = pivotItem.Content as Grid;
+                if (grid != null && grid.Children.Count == 1)
+                {
+                    var backNavigation = grid.Children.Single() as IBackButtonNavigation;
+                    if (backNavigation != null)
+                    {
+                        e.Handled = backNavigation.NavigateBack();
+                        if (e.Handled) return;
+                    }
+                }
+            }
+
+            var frame = Window.Current.Content as Frame;
+            if (frame.CanGoBack)
+            {
+                frame.GoBack();
+                e.Handled = true;
+            }
         }
 
         private void NetworkInformation_NetworkStatusChanged(object sender)

@@ -17,7 +17,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace GlobalApp
 {
-    public sealed partial class AlarmUC : UserControl
+    public sealed partial class AlarmUC : UserControl, IBackButtonNavigation
     {
         public AlarmUC()
         {
@@ -28,6 +28,17 @@ namespace GlobalApp
         {
             var pageType = typeof(AlarmMainPage);
             frameAlarm.Navigate(pageType);
+        }
+
+        public bool NavigateBack()
+        {
+            if (frameAlarm.CanGoBack)
+            {
+                frameAlarm.GoBack();
+                return true;
+            }
+
+            return false;
         }
     }
 }

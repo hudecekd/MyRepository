@@ -13,9 +13,11 @@
         <StackPanel Orientation="Horizontal">
             <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="Current Date &amp; Time:" VerticalAlignment="Top"/>
             <TextBlock x:Name="txtDateTime" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="Value" VerticalAlignment="Top" Height="20"/>
+            <Button Visibility="Collapsed" x:Name="btnCenter" Content="Center" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnCenter_Click" />
         </StackPanel>
-        <Grid x:Name="gClock"  Margin="0,50,0,0">
-            <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="13" Margin="209,152,0,0" Stroke="Black" VerticalAlignment="Top" Width="136">
+        <Grid x:Name="gClock"  Margin="0,70,0,0">
+            <Canvas x:Name="cClock">
+                <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="13" Margin="209,152,0,0" Stroke="Black" VerticalAlignment="Top" Width="136">
                 <Rectangle.RenderTransform>
                 <RotateTransform x:Name="rtClockSeconds" CenterX="-20" CenterY="7" Angle="0" />
             </Rectangle.RenderTransform>
@@ -31,6 +33,7 @@
                 </Rectangle.RenderTransform>
             </Rectangle>
             <Ellipse Fill="Red" HorizontalAlignment="Left" Height="15" Margin="181.5,151,0,0" Stroke="Black" VerticalAlignment="Top" Width="15"/>
+            </Canvas>
         </Grid>
     </Grid>
 </UserControl>

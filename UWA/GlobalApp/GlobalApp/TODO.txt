@@ -6,3 +6,4 @@
 - navigation history is not correct when app is launched by toast so
   back button does not work correctly! It does not return to "main alrm page"
   but to "main page".
+- change layout when orientation of display changes

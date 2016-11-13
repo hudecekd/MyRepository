@@ -59,9 +59,11 @@ namespace GlobalApp
             _previousTime = time;
         }
 
+        private Dictionary<TextBlock, Point> locations = new Dictionary<TextBlock, Point>();
+
         private void UserControl_Loading(FrameworkElement sender, object args)
         {
-            var r = 160;
+            var r = 190;
             for (var hour = 1; hour <= 12; hour++)
             {
                 var alpha = 360d / 12 * hour;
@@ -70,9 +72,27 @@ namespace GlobalApp
                 var top = -Math.Cos(alphaR) * r; // minus since we need it because of cosinus.
                 TextBlock tbHour = new TextBlock();
                 tbHour.Text = hour.ToString();
-                tbHour.Margin = new Thickness(left + 189, top + 152, 0, 0);
 
-                gClock.Children.Add(tbHour);
+                // left & top is 152
+                // then + half of base rectangle
+                // for now it is ok
+                // TODO: make all coordinates better!!!
+                var centerY = 152 + 13 / 2;
+
+                var newPoint = new Point();// new Point(left + 189, top + centerY);
+
+                //tbHour.Margin = new Thickness(left + 189, top + 152, 0, 0);
+
+                tbHour.HorizontalAlignment = HorizontalAlignment.Left;
+                tbHour.VerticalAlignment = VerticalAlignment.Top;
+
+                tbHour.SetValue(Canvas.LeftProperty, newPoint.X);
+                tbHour.SetValue(Canvas.TopProperty, newPoint.Y);
+
+                //gClock.Children.Add(tbHour);
+                cClock.Children.Add(tbHour);
+
+                locations.Add(tbHour, new Point(left + 189, top + centerY));
             }
 
             for (var minutes = 1; minutes <= 60; minutes++)
@@ -83,16 +103,26 @@ namespace GlobalApp
                 // if minutes can represent hour then make it longer
                 var width = (minutes % 5 == 0) ? 20 : 10;
 
+                // base y location + base rectangles height /2 (which gives us
+                // center y location and then
+                // minus half of height which should make new recangle centered
+                // following rotation should be ok because it shuld be correctly centered
+                // because of base rectangle definition.
+                var y = 152 + 13 / 2 - 5 / 2;
+
                 var rectangle = new Rectangle();
-                rectangle.Margin = new Thickness(189 + 156, 152, 0, 0);
+                rectangle.Margin = new Thickness(189 + 160, y, 0, 0);
                 rectangle.HorizontalAlignment = HorizontalAlignment.Left;
                 rectangle.VerticalAlignment = VerticalAlignment.Top;
                 rectangle.Width = width;
                 rectangle.Height = 5;
-                rectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Black);
+                // TODO: use system color as for textbox
+                // on desktop it shoul be black and on mobile
+                // where background is black it should be white
+                rectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.White);
                 var transform = new RotateTransform();
                 transform.Angle = alpha - 90;
-                transform.CenterX = -156;
+                transform.CenterX = -160;
                 transform.CenterY = 0;
                 rectangle.RenderTransform = transform;
 
@@ -119,6 +149,20 @@ namespace GlobalApp
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             UpdateClock(); // first time we will not wait for timer and update the clock immediatelly
+            CenterHourTexts();
+        }
+
+        private void CenterHourTexts()
+        {
+            foreach (var item in locations)
+            {
+                item.Key.SetValue(CenterOnPoint.CenterPointProperty, item.Value);
+            }
+        }
+
+        private void btnCenter_Click(object sender, RoutedEventArgs e)
+        {
+            CenterHourTexts();
         }
     }
 }

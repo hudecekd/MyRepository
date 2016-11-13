@@ -30,19 +30,8 @@ namespace GlobalApp
         {
             this.InitializeComponent();
 
-            Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested += AlarmSettingPage_BackRequested;
-
             InitializeAudioOptions();
             InitializeImageOptions();
-        }
-
-        private void AlarmSettingPage_BackRequested(object sender, Windows.UI.Core.BackRequestedEventArgs e)
-        {
-            if (Frame.CanGoBack)
-            {
-                Frame.GoBack();
-                e.Handled = true;
-            }
         }
 
         private void InitializeAudioOptions()
@@ -141,7 +130,7 @@ namespace GlobalApp
             //cmbSounds.SelectedItem = alarm.AudioFilename;
 
             // enable back button
-            Windows.UI.Core.SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = Windows.UI.Core.AppViewBackButtonVisibility.Visible;
+            //Windows.UI.Core.SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = Windows.UI.Core.AppViewBackButtonVisibility.Visible;
 
             base.OnNavigatedTo(e);
         }   
