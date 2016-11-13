@@ -35,15 +35,22 @@
                                 <RadioButton x:Name="rbOnlyOnce" IsChecked="{Binding OnlyOnce}" Content="Only Once" Checked="rbOnlyOnce_Checked" />
                                 <RadioButton x:Name="rbRepeatedly" IsChecked="{Binding Repeatedly}" Content="Repeatedly" Checked="rbRepeatedly_Checked" />
                             </StackPanel>
-                            <Button HorizontalAlignment="Left" VerticalAlignment="Top" Content="Select Image ..." x:Name="btnSelectImage" Click="btnSelectImage_Click" />
                             <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <StackPanel x:Name="spOnlyOnce" Orientation="Horizontal">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Content="Select Image ..." x:Name="btnSelectImage" Click="btnSelectImage_Click" />
+                                <ComboBox x:Name="cmbImages" SelectedItem="{Binding ImageFilename,Mode=TwoWay}" Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+                            </Grid>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <StackPanel x:Name="spOnlyOnce" Orientation="Horizontal">
                                     <DatePicker x:Name="dpDate" Date="{Binding DateTimeOffset, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            </StackPanel>
+                                </StackPanel>
                                 <StackPanel x:Name="spRepeatedly" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" >
                                     <StackPanel.Resources>
                                         <Style TargetType="CheckBox">
@@ -56,15 +63,15 @@
                                             </Setter>-->
                                         </Style>
                                     </StackPanel.Resources>
-                                <CheckBox IsChecked="{Binding UseMonday, Mode=TwoWay}"  x:Name="chbMonday" Content="Monday"  />
-                                <CheckBox IsChecked="{Binding UseTuesday, Mode=TwoWay}"  x:Name="chbTuesday" Content="Tuesday" />
-                                <CheckBox IsChecked="{Binding UseWednesday, Mode=TwoWay}"  x:Name="chbWednesday" Content="Wednesday" />
-                                <CheckBox IsChecked="{Binding UseThursday, Mode=TwoWay}"  x:Name="chbThursday" Content="Thursday" />
-                                <CheckBox IsChecked="{Binding UseFriday, Mode=TwoWay}"  x:Name="chbFriday" Content="Friday" />
-                                <CheckBox IsChecked="{Binding UseSaturday, Mode=TwoWay}"  x:Name="chbSaturday" Content="Saturday" />
-                                <CheckBox IsChecked="{Binding UseSunday, Mode=TwoWay}"  x:Name="chbSunday" Content="Sunday" />
-                            </StackPanel>
-                        </Grid>
+                                    <CheckBox IsChecked="{Binding UseMonday, Mode=TwoWay}"  x:Name="chbMonday" Content="Monday"  />
+                                    <CheckBox IsChecked="{Binding UseTuesday, Mode=TwoWay}"  x:Name="chbTuesday" Content="Tuesday" />
+                                    <CheckBox IsChecked="{Binding UseWednesday, Mode=TwoWay}"  x:Name="chbWednesday" Content="Wednesday" />
+                                    <CheckBox IsChecked="{Binding UseThursday, Mode=TwoWay}"  x:Name="chbThursday" Content="Thursday" />
+                                    <CheckBox IsChecked="{Binding UseFriday, Mode=TwoWay}"  x:Name="chbFriday" Content="Friday" />
+                                    <CheckBox IsChecked="{Binding UseSaturday, Mode=TwoWay}"  x:Name="chbSaturday" Content="Saturday" />
+                                    <CheckBox IsChecked="{Binding UseSunday, Mode=TwoWay}"  x:Name="chbSunday" Content="Sunday" />
+                                </StackPanel>
+                            </Grid>
                         </StackPanel>
                     </Grid>
                 </Grid>

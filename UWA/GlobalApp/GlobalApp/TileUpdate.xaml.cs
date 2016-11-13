@@ -220,5 +220,19 @@ BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeNumber);
             await RegisterPushBackgroundTask(PushTaskName, PushAssemblyName);
             btnRegisterPushBT.IsEnabled = true;
         }
+
+        private void btnSeeBTs_Click(object sender, RoutedEventArgs e)
+        {
+            lbScheduledNotifications.Items.Clear();
+            foreach (var task in BackgroundTaskRegistration.AllTasks.Values)
+            {
+                lbScheduledNotifications.Items.Add(task.Name);
+            }
+        }
+
+        private void btnGetChannelUri_Click(object sender, RoutedEventArgs e)
+        {
+            txtChannelUri.Text = PushNotificationsVM.ChannelUri;
+        }
     }
 }

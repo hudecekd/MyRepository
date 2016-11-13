@@ -33,6 +33,7 @@ namespace GlobalApp
             Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested += AlarmSettingPage_BackRequested;
 
             InitializeAudioOptions();
+            InitializeImageOptions();
         }
 
         private void AlarmSettingPage_BackRequested(object sender, Windows.UI.Core.BackRequestedEventArgs e)
@@ -55,10 +56,10 @@ namespace GlobalApp
 
         private void InitializeImageOptions()
         {
-            cmbSounds.Items.Clear();
+            cmbImages.Items.Clear();
             foreach (var audioFileName in AlarmManager.Instance.GetImageiles())
             {
-                cmbSounds.Items.Add(audioFileName);
+                cmbImages.Items.Add(audioFileName);
             }
         }
 

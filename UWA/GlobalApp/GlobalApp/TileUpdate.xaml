@@ -31,10 +31,15 @@
         <Button x:Name="btnBadgeNumber" Content="Budge Number" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="btnBadgeNumber_Click"/>
         <Button x:Name="btnCleraBadge" Content="Clear Badge" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="btnCleraBadge_Click"/>
         <Button x:Name="btnRegisterPushBT" Content="Register Push BT" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top" Click="btnRegisterPushBT_Click"/>
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="btnGetChannelUri" Content="Get Channel Uri" HorizontalAlignment="Stretch" Margin="0" VerticalAlignment="Stretch" Click="btnGetChannelUri_Click"/>
+                <TextBox HorizontalAlignment="Stretch" VerticalAlignment="Top" x:Name="txtChannelUri" />
+            </StackPanel>
         </StackPanel>
         <Grid Grid.Row="1">
             <Button x:Name="btnSeeScheduled" Content="See All Scheduled Notifications" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnSeeScheduled_Click"/>
-            <ListBox x:Name="lbScheduledNotifications" HorizontalAlignment="Stretch"  Margin="0,40,0,0"  VerticalAlignment="Stretch" />
+            <Button x:Name="btnSeeBTs" Margin="3,40,0,0" Content="See BTs" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnSeeBTs_Click" />
+            <ListBox x:Name="lbScheduledNotifications" HorizontalAlignment="Stretch"  Margin="0,77,0,0"  VerticalAlignment="Stretch" />
         </Grid>
     </Grid>
 </UserControl>

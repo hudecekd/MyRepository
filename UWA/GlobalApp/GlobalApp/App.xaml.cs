@@ -85,6 +85,8 @@ namespace GlobalApp
             var hub = new NotificationHub("DusnaNH", "Endpoint=sb://dusnanhn.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=ERtJl2vJ/FAApBs7yyAM1kQhAVUM2tedNbeNu1vkPns=");
             var result = await hub.RegisterNativeAsync(channel.Uri);
 
+            PushNotificationsVM.ChannelUri = channel.Uri;
+
             // Displays the registration ID so you know it was successful
             if (result.RegistrationId != null)
             {

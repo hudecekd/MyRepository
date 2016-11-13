@@ -13,6 +13,8 @@ namespace GlobalApp
         public static ObservableCollection<PushNotificationVM> Notifications { get; set; } = new ObservableCollection<PushNotificationVM>();
 
         public static volatile bool PassToBackgroundTask = true;
+
+        public static volatile string ChannelUri;
     }
 
     public class PushNotificationVM
