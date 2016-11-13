@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
 
+using Microsoft.Toolkit.Uwp.Notifications;
+
 namespace AlarmLibrary
 {
     /// <summary>
@@ -188,20 +190,11 @@ namespace AlarmLibrary
         {
             var updater = TileUpdateManager.CreateTileUpdaterForApplication();
 
-            var fileUriStr = $"ms-appdata:///local/{AudioFolderName}/{audioFile}"; // file is copied to local folder so we use different prefix
-            var durationStr = (false) ? "long" : "short";
-            var loopStr = (false ? "true" : "false");
-            var xmlString = string.Format(toastXml,
-                fileUriStr, 
-                loopStr, 
-                durationStr,
-                alarmId,
-                imageFile);
+            var audioFileUriString = $"ms-appdata:///local/{AudioFolderName}/{audioFile}"; // file is copied to local folder so we use different prefix
+            var toastXmlContent = CreateToastXml(ToastDuration.Long, audioFileUriString, false, imageFile, alarmId.ToString());
+            var xmlString = toastXmlContent.GetXml();
 
-            var xml = new XmlDocument();
-            xml.LoadXml(xmlString);
-
-            var toast = new ScheduledToastNotification(xml,
+            var toast = new ScheduledToastNotification(toastXmlContent,
                 dateTime.ToUniversalTime(),
                 TimeSpan.FromMinutes(1),
                 1);
@@ -238,23 +231,54 @@ namespace AlarmLibrary
         /// </summary>
         public const string ImagesFolderName = "Images";
 
-        private string toastXml =
-@"
-<toast duration=""{2}"" scenario=""alarm"" launch=""app-defined-string"">
-  <visual>
-    <binding template=""ToastGeneric"" >
-      <text>Alarm</text>
-      <text>Wek up! Wake up!</text>
-      <image placement=""inline"" src=""ms-appdata:///local/Images/{4}"" />
-    </binding>
-  </visual>
-  <actions>
-    <action content=""Configure Alarm"" arguments=""alarmAction;{3}"" imageUri=""check.png"" />
-    <action activationType=""system"" arguments=""snooze"" content="""" />
-    <action activationType=""system"" arguments=""dismiss"" content="""" />
-  </actions>
-  <audio  src=""{0}"" loop=""{1}""/>
-</toast>
-";
+        private XmlDocument CreateToastXml(ToastDuration duration, string audioPath, bool loop, string imageFilename, string alarmAction)
+        {
+            var snoozeTimeId = "snoozeTimeId";
+            ToastContent content = new ToastContent()
+            {
+                Duration = duration,
+                Scenario = ToastScenario.Alarm,
+                Launch = "app-defined-string",
+                Visual = new ToastVisual()
+                {
+                    BindingGeneric = new ToastBindingGeneric()
+                    {
+                        Children =
+                        {
+                            new AdaptiveText() { Text = "Alarm", HintAlign= AdaptiveTextAlign.Center, HintStyle = AdaptiveTextStyle.Title },
+                            new AdaptiveText() { Text= "Wake up! Wake up!" },
+                            new AdaptiveImage() { Source = $"ms-appdata:///local/Images/{imageFilename}" }
+                        }
+                    }
+                },
+                Actions = new ToastActionsCustom()
+                {
+                    Inputs =
+                    {
+                        new ToastSelectionBox(snoozeTimeId)
+                        {
+                            DefaultSelectionBoxItemId  = "10",
+                            Items =
+                            {
+                                new ToastSelectionBoxItem("5", "5 minutes"),
+                                new ToastSelectionBoxItem("10", "10 minutes"),
+                                new ToastSelectionBoxItem("15", "15 minutes"),
+                                new ToastSelectionBoxItem("30", "30 minutes"),
+                                new ToastSelectionBoxItem("60", "1 hour")
+                            }
+                        }
+                    },
+                    Buttons =
+                    {
+                        new ToastButton("Configure Alarm", $"alarmAction;{alarmAction}") { ImageUri = "check.png" },
+                        new ToastButtonSnooze() { SelectionBoxId = snoozeTimeId },
+                        new ToastButtonDismiss()
+                    }
+                },
+                Audio = new ToastAudio() { Src = new Uri(audioPath), Loop = loop }
+            };
+
+            return content.GetXml();
+        }
     }
 }
