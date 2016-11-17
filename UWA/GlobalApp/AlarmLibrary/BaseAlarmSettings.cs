@@ -83,12 +83,47 @@ namespace AlarmLibrary
 
         public void LoadSettings()
         {
-            LoadAlarmSettings();
-            LoadHolidaysSettings();
+            LoadAlarmSettingsVersion1();
+            LoadHolidaysSettingsVersion1();
         }
 
-        private void LoadAlarmSettings()
-        { 
+        public DateTimeOffset? ServicingCompleteLastRun
+        {
+            get
+            {
+                if (Windows.Storage.ApplicationData.Current.LocalSettings.Values.ContainsKey("ServicingCompleteLastRun") == false)
+                    return null;
+                var dateTime = Windows.Storage.ApplicationData.Current.LocalSettings.Values["ServicingCompleteLastRun"] as DateTimeOffset?;
+                return dateTime;
+            }
+            set
+            {
+                if (value == null) Windows.Storage.ApplicationData.Current.LocalSettings.Values.Remove("ServicingCompleteLastRun");
+                if (value != null) Windows.Storage.ApplicationData.Current.LocalSettings.Values["ServicingCompleteLastRun"] = value.Value;
+            }
+        }
+
+        /// <summary>
+        /// Used to clear all settings.
+        /// For example if error occurs during loading of setting.
+        /// </summary>
+        public void Clear()
+        {
+            Windows.Storage.ApplicationData.Current.LocalSettings.Values.Clear();
+        }
+
+        public void ConvertVersion0To1()
+        {
+            LoadAlarmSettingsVersion0();
+
+            // make modifications which are equal to default setting for new version. In this case version 1 by default ignores holidays.
+            foreach (var alarm in Alarms) alarm.IgnoreHolidays = true;
+
+            SaveSettings(); // use default save settings method. Settings should be already converted to the lastest version before saving.
+        }
+
+        private void LoadAlarmSettingsVersion0()
+        {
             // TODO: setting versioning
             Alarms.Clear();
 
@@ -113,15 +148,39 @@ namespace AlarmLibrary
                 alarm.ImageFilename = alarmJson[JsonImageFilename].GetString();
                 alarm.Occurrence = (OccurrenceType)Enum.Parse(typeof(OccurrenceType), alarmJson[JsonOccurrence].GetString());
 
-                // TODO: for now versioning of local settin is not implemented so we have to check whether key is there
-                // because it was added recently.
-                alarm.IgnoreHolidays = alarmJson.ContainsKey(JsonIgnoreHolidays) ? alarmJson[JsonIgnoreHolidays].GetBoolean() : true;
-
                 Alarms.Add(alarm);
             }
         }
 
-        private void LoadHolidaysSettings()
+        private void LoadAlarmSettingsVersion1()
+        {
+            LoadAlarmSettingsVersion0();
+
+            // WARNING: what if settings is somehow changed/removed between loading of previous version and
+            // loading of modification for the latest version below?
+
+            // we are trying to load setting for the first time => there is nothing
+            // when versioning will be supported check mechanism should be better
+            // or someone delted the settings.dat file for example.
+            if (Windows.Storage.ApplicationData.Current.LocalSettings.Values.ContainsKey(AlarmsKey) == false)
+                return;
+
+            var settingsStr = Windows.Storage.ApplicationData.Current.LocalSettings.Values[AlarmsKey] as string;
+            var alarmsJson = JsonValue.Parse(settingsStr).GetArray();
+
+            foreach (var alarmJsonValue in alarmsJson)
+            {
+                var alarmJson = alarmJsonValue.GetObject();
+                var alarmId = int.Parse(alarmJson[JsonId].GetString());
+                var alarmIgnoreHolidays = alarmJson[JsonIgnoreHolidays].GetBoolean();
+                var alarm = Alarms.Single(a => a.Id == alarmId);
+
+                // modification made to the version 1.
+                alarm.IgnoreHolidays = alarmIgnoreHolidays;
+            }
+        }
+
+        private void LoadHolidaysSettingsVersion1()
         {
             var newHolidays = new List<Holiday>();
 

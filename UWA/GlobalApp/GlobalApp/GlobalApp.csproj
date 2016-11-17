@@ -241,6 +241,10 @@
       <Project>{8377fb60-0b69-4b18-b371-92930d94c13c}</Project>
       <Name>PushNotificationsBackgroundTask</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ServicingCompleteBackgroundTask\ServicingCompleteBackgroundTask.csproj">
+      <Project>{442a70e7-23a7-4f42-88ea-eaf9e0ecf1a8}</Project>
+      <Name>ServicingCompleteBackgroundTask</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TileUpdateBackgroundTask\TileUpdateBackgroundTask.csproj">
       <Project>{4d55d61b-6e0b-42ea-93e3-5d717899b7ed}</Project>
       <Name>TileUpdateBackgroundTask</Name>

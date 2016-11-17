@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="700"
-    d:DesignWidth="400">
+    d:DesignWidth="400" Loaded="UserControl_Loaded">
 
     <ScrollViewer VerticalScrollBarVisibility="Visible">
         <Grid  Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -28,7 +28,11 @@
         
         <Button x:Name="btnClearScheduled" Content="Clear" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnClearScheduled_Click"/>
         <Button x:Name="btnRegisterAlarmWatcher" Content="Register Alarm Watcher BT" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="btnRegisterAlarmWatcher_Click"/>
-        <Button x:Name="btnBadge" Content="Create Badge" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnBadge_Click"/>
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="btnRegisterServicingComplete" Content="Register Servicing Complete BT" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="btnRegisterServicingComplete_Click" />
+                    <TextBlock x:Name="tbServicingCompleteLastRun" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                </StackPanel>
+                <Button x:Name="btnBadge" Content="Create Badge" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnBadge_Click"/>
         <Button x:Name="btnBadgeNumber" Content="Budge Number" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="btnBadgeNumber_Click"/>
         <Button x:Name="btnCleraBadge" Content="Clear Badge" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="btnCleraBadge_Click"/>
         <Button x:Name="btnRegisterPushBT" Content="Register Push BT" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top" Click="btnRegisterPushBT_Click"/>

@@ -1,4 +1,6 @@
-﻿- save setting when Suspend occurs otherwise all alarm settings
+﻿- Check that DateTime is used right (UTC, local etc.). That for example local DateTime
+  is not being compared aginst UTC DateTime and so on.
+- save setting when Suspend occurs otherwise all alarm settings
   go missing for some reason.
 - save settings to roaming so I know how to use roaming correctly?
 - handle main back button

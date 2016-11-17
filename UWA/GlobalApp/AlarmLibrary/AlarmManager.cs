@@ -126,10 +126,10 @@ namespace AlarmLibrary
             {
                 if (alarm.Occurrence == OccurrenceType.OnlyOnce)
                 {
-                    var dateTime = alarm.DateTimeOffset.Add(alarm.Time);
-                    if (!CheckAlarmDateTime(dateTime.Date)) return;
+                    var dateTime = alarm.DateTimeOffset.Date.Add(alarm.Time);
+                    if (!CheckAlarmDateTime(dateTime)) return;
 
-                    CreateNotification(alarm.Id, alarm.AudioFilename, alarm.ImageFilename, dateTime.Date.ToUniversalTime());
+                    CreateNotification(alarm.Id, alarm.AudioFilename, alarm.ImageFilename, dateTime.ToUniversalTime());
                 }
                 else // repeatedly is checked
                 {

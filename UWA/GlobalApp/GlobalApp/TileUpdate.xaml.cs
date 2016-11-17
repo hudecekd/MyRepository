@@ -32,6 +32,9 @@ namespace GlobalApp
         private const string PushTaskName = "PushNotificationsBackgroundTask";
         private const string PushAssemblyName = "PushNotificationsBackgroundTask";
 
+        private const string ServicingCompleteTaskName = "ServicingCompleteBackgroundTask";
+        private const string ServicingCompleteAssemblyName = "ServicingCompleteBackgroundTask";
+
         public TileUpdate()
         {
             this.InitializeComponent();
@@ -106,7 +109,6 @@ namespace GlobalApp
                 builder.Name = taskName;
                 builder.TaskEntryPoint = taskAssemblyName + "." + taskName;
                 builder.SetTrigger(new TimeTrigger(interval, false));
-
                 builder.Register();
             }
         }
@@ -134,6 +136,38 @@ namespace GlobalApp
                 builder.Name = taskName;
                 builder.TaskEntryPoint = taskAssemblyName + "." + taskName;
                 builder.SetTrigger(new PushNotificationTrigger());
+
+                builder.Register();
+            }
+        }
+
+        private async Task RegisterBackgroundTask(string taskName, string taskAssemblyName, params IBackgroundTrigger[] triggers)
+        {
+            var taskRegistered = IsTaskRegistered(taskName);
+
+            if (!taskRegistered)
+            {
+                //required call
+                var access = await BackgroundExecutionManager.RequestAccessAsync();
+
+                tbRegistration.Text = "";
+                //abort if access isn't granted
+                if (access == BackgroundAccessStatus.DeniedByUser || access == BackgroundAccessStatus.DeniedBySystemPolicy)
+                {
+                    tbRegistration.Text = "Denied";
+                    return;
+                }
+                tbRegistration.Text = "Allowed";
+
+                var builder = new BackgroundTaskBuilder();
+
+                builder.Name = taskName;
+                builder.TaskEntryPoint = taskAssemblyName + "." + taskName;
+
+                foreach (var trigger in triggers)
+                {
+                    builder.SetTrigger(trigger);
+                }
 
                 builder.Register();
             }
@@ -233,6 +267,19 @@ BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeNumber);
         private void btnGetChannelUri_Click(object sender, RoutedEventArgs e)
         {
             txtChannelUri.Text = PushNotificationsVM.ChannelUri;
+        }
+
+        private async void btnRegisterServicingComplete_Click(object sender, RoutedEventArgs e)
+        {
+            await RegisterBackgroundTask(
+                ServicingCompleteTaskName,
+                ServicingCompleteAssemblyName,
+                new SystemTrigger(SystemTriggerType.ServicingComplete, oneShot: false));
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            tbServicingCompleteLastRun.Text = AlarmLibrary.BaseAlarmSettings.Instance.ServicingCompleteLastRun.ToString();
         }
     }
 }

@@ -12,6 +12,9 @@ namespace AlarmBackgroundTask
     {
         public void Run(IBackgroundTaskInstance taskInstance)
         {
+            // WARNING: if version update will be done during app start then
+            // if app is not started task could fail if it starts before app!!!
+            // move version update to servicing complete!!!
             BaseAlarmSettings.Instance.LoadSettings();
 
             foreach (var alarm in BaseAlarmSettings.Instance.Alarms)
