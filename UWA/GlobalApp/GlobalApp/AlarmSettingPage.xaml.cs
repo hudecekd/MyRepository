@@ -85,6 +85,7 @@ namespace GlobalApp
             if (rbRepeatedly.IsChecked.Value) setting.Occurrence = OccurrenceType.Repeatedly;
 
             setting.DateTimeOffset = settingVM.DateTimeOffset;
+            setting.IgnoreHolidays = settingVM.IgnoreHolidays;
 
             setting.DaysOfWeek = DayOfWeekType.None;
             if (chbMonday.IsChecked.Value) setting.DaysOfWeek = setting.DaysOfWeek | DayOfWeekType.Monday;

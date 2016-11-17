@@ -181,6 +181,31 @@ namespace AlarmLibrary
                     if (plannedToasts.Any(t => t.DeliveryTime == dateTime))
                         continue;
 
+                    // holidays should be ignores so we will check for them.
+                    // It applies only for occurenes which are set to "repeatedly"
+                    if (alarm.Occurrence == OccurrenceType.Repeatedly && alarm.IgnoreHolidays)
+                    {
+                        // TODO: handle local time/date time offcet!!! use offset!!!
+                        var holiday = BaseAlarmSettings.Instance.GetHoliday(plannedDate.Date);
+                        if (holiday != null) // holiday exists => do not set alarm
+                        {
+                            DateTime holidayInformDateTime;
+                            if (holiday.Date.Date == DateTime.Now.Date) // holiday is today => inform immediatelly
+                                holidayInformDateTime = DateTime.Now.AddMinutes(1);
+                            else if (holiday.Date.Date == DateTime.Now.Date.AddDays(1))
+                                holidayInformDateTime = DateTime.Now.AddMinutes(1); // holiday is tomorrow => inform immediatelly so we can change it if required
+                            else // more than one day to holiday => plan message
+                                holidayInformDateTime = holiday.Date.AddDays(-1); // inform us one day before holiday
+
+                            var message = $"Alarm not set for {holiday.Date.Date.ToString("MM.dd.yyyy")} because that day is holiday.";
+                            var message2 = $"Holiday description: {holiday.LocalDescription}";
+                            CreateHolidayNotification(alarm.Id, "Alarm -> Holiday", message, message2, holidayInformDateTime);
+
+                            continue;
+                        }
+                    }
+
+                    // either holiday is not found (that day is not holiday or holidays are not laoded) or occurenc is set to "once"
                     CreateNotification(alarm.Id, alarm.AudioFilename, alarm.ImageFilename, dateTime.ToUniversalTime());
                 }
             }
@@ -188,8 +213,6 @@ namespace AlarmLibrary
 
         private void CreateNotification(int alarmId, string audioFile, string imageFile, DateTime dateTime)
         {
-            var updater = TileUpdateManager.CreateTileUpdaterForApplication();
-
             var audioFileUriString = $"ms-appdata:///local/{AudioFolderName}/{audioFile}"; // file is copied to local folder so we use different prefix
             var toastXmlContent = CreateToastXml(ToastDuration.Long, audioFileUriString, false, imageFile, alarmId.ToString());
             var xmlString = toastXmlContent.GetXml();
@@ -201,6 +224,27 @@ namespace AlarmLibrary
             toast.Id = alarmId.ToString(); // not unique. It is enouqh to identify alarm not "toast"
             ToastNotificationManager.CreateToastNotifier().AddToSchedule(toast);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="alarmId">Alarm id which is used to identify the toast. Used when alarm is being disabled so that toast can be removed.</param>
+        /// <param name="caption"></param>
+        /// <param name="message"></param>
+        /// <param name="message2"></param>
+        /// <param name="holidayInformDateTime"></param>
+        private void CreateHolidayNotification(int alarmId, string caption, string message, string message2, DateTime holidayInformDateTime)
+        {
+            var toastXmlContent = CreateToastMessageXml(caption, message, message2);
+
+            var toast = new ScheduledToastNotification(toastXmlContent,
+                holidayInformDateTime.ToUniversalTime(),
+                TimeSpan.FromMinutes(1),
+                1);
+            toast.Id = alarmId.ToString(); // not unique. It is enouqh to identify alarm not "toast"
+            ToastNotificationManager.CreateToastNotifier().AddToSchedule(toast);
+        }
+
 
         public void DisableAlarm(BaseAlarmSetting alarm)
         {
@@ -276,6 +320,33 @@ namespace AlarmLibrary
                     }
                 },
                 Audio = new ToastAudio() { Src = new Uri(audioPath), Loop = loop }
+            };
+
+            return content.GetXml();
+        }
+
+        private XmlDocument CreateToastMessageXml(string caption, string text, string text2)
+        {
+            ToastContent content = new ToastContent()
+            {
+                Duration = ToastDuration.Long,
+                Scenario = ToastScenario.Default,
+                Launch = "app-defined-string",
+                Visual = new ToastVisual()
+                {
+                    BindingGeneric = new ToastBindingGeneric()
+                    {
+                        Children =
+                        {
+                            new AdaptiveText() { Text = caption },
+                            new AdaptiveText() { Text= text },
+                            new AdaptiveText() { Text= text2 }
+                        }
+                    }
+                },
+                Actions = new ToastActionsCustom()
+                {
+                }
             };
 
             return content.GetXml();

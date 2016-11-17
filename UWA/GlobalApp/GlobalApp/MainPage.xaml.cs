@@ -71,6 +71,8 @@ namespace GlobalApp
         private void NetworkInformation_NetworkStatusChanged(object sender)
         {
             UpdateConnectionStatus();
+
+            GetHolidays();
         }
 
         private void UpdateConnectionStatus()
@@ -125,6 +127,47 @@ namespace GlobalApp
             alarm.State = AlarmSettingState.Edit;
 
             Frame.Navigate(typeof(AlarmSettingPage), alarm);
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            GetHolidays();
+        }
+
+        /// <summary>
+        /// For vary rar possibility that multiple calls would occur simultaneously.
+        /// TODO: Who to do not wait if it is already running and just ignore second call?
+        /// </summary>
+        private object _getHolidaysLock = new object();
+
+        private void GetHolidays()
+        {
+            try
+            {
+                lock (_getHolidaysLock)
+                {
+                    var internetAvailable = false;
+                    var connectionProfile = NetworkInformation.GetInternetConnectionProfile();
+                    if (connectionProfile != null)
+                    {
+                        if (connectionProfile.GetNetworkConnectivityLevel() == NetworkConnectivityLevel.InternetAccess)
+                        {
+                            internetAvailable = true;
+                        }
+                    }
+                    if (!internetAvailable) return; // TODO: when internet available again then try to load holidays
+
+                    Task.Factory.StartNew(() =>
+                    {
+                        // TODO: handle change from one year to another. We need to load its holidays too!!!
+                        var holidays = HolidaysApi.GetHolidays(2016, CountryCode.Cze);
+                        BaseAlarmSettings.Instance.UpdateHolidays(holidays);
+                    });
+                }
+            }
+            catch (Exception ex) // whatever happens just ignore it for now and keep previous holidays.
+            {
+            }
         }
     }
 }

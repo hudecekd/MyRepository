@@ -63,6 +63,8 @@
                                             </Setter>-->
                                         </Style>
                                     </StackPanel.Resources>
+                                    <CheckBox IsChecked="{Binding IgnoreHolidays, Mode=TwoWay}" Margin="0,0,0,20"  x:Name="chbIgnoreHolidays" Content="Ignore Holidays"  />
+                                    
                                     <CheckBox IsChecked="{Binding UseMonday, Mode=TwoWay}"  x:Name="chbMonday" Content="Monday"  />
                                     <CheckBox IsChecked="{Binding UseTuesday, Mode=TwoWay}"  x:Name="chbTuesday" Content="Tuesday" />
                                     <CheckBox IsChecked="{Binding UseWednesday, Mode=TwoWay}"  x:Name="chbWednesday" Content="Wednesday" />

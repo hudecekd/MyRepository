@@ -124,9 +124,14 @@
     </Compile>
     <Compile Include="Converters\Alarm\DaysToStringConverter.cs" />
     <Compile Include="Converters\Alarm\OccurrenceToStringConverter.cs" />
+    <Compile Include="DayToStringConverter.cs" />
     <Compile Include="GpsMainPage.xaml.cs">
       <DependentUpon>GpsMainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="HolidaysDialog.xaml.cs">
+      <DependentUpon>HolidaysDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HolidayVM.cs" />
     <Compile Include="IBackButtonNavigation.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
@@ -199,6 +204,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="GpsMainPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HolidaysDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

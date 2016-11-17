@@ -1,0 +1,33 @@
+﻿<ContentDialog
+    x:Class="GlobalApp.HolidaysDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GlobalApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Known Holidays"
+    PrimaryButtonText="Close"
+    SecondaryButtonText=""
+    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+    SecondaryButtonClick="ContentDialog_SecondaryButtonClick" Loaded="ContentDialog_Loaded">
+
+    <Grid>
+        <Grid.Resources>
+            <local:DayToStringConverter x:Key="DayToStringConverter" />
+            
+            <DataTemplate x:Key="HolidayKey">
+                <StackPanel Padding="10">
+                    <TextBlock Text="{Binding Date, Converter={StaticResource DayToStringConverter}, ConverterParameter=MM.dd.yyyy}" />
+                    <TextBlock Text="{Binding LocalDescription}" />
+                    <TextBlock Text="{Binding EnglishDescription}" />
+                </StackPanel>
+            </DataTemplate>
+        </Grid.Resources>
+        <ListView ItemsSource="{Binding Holidays}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <ListView.ItemTemplate>
+                <StaticResource ResourceKey="HolidayKey" />
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</ContentDialog>

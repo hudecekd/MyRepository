@@ -72,7 +72,8 @@ namespace GlobalApp
                     State = AlarmSettingState.New,
                     Time = time, // select current time by default
                     DateTimeOffset = DateTimeOffset.Now,
-                    ImageFilename = "alarm.png"
+                    ImageFilename = "alarm.png",
+                    IgnoreHolidays = true // by default we will ignore holidays
                 });
             }
             catch (Exception ex)
@@ -91,6 +92,12 @@ namespace GlobalApp
             alarm.State = AlarmSettingState.Edit;
 
             Frame.Navigate(typeof(AlarmSettingPage), alarm);
+        }
+
+        private async void btnShowHolidays_Click(object sender, RoutedEventArgs e)
+        {
+            var holidaysDialog = new HolidaysDialog();
+            await holidaysDialog.ShowAsync();
         }
     }
 }

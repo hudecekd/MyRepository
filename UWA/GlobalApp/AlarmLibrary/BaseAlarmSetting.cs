@@ -31,6 +31,8 @@ namespace AlarmLibrary
         /// </summary>
         public DateTimeOffset DateTimeOffset { get; set; }
 
+        public bool IgnoreHolidays { get; set; }
+
         #region Days of week
         public DayOfWeekType DaysOfWeek { get; set; }
 

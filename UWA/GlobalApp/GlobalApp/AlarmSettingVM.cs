@@ -52,6 +52,8 @@ namespace GlobalApp
         /// </summary>
         public DateTimeOffset DateTimeOffset { get; set; }
 
+        public bool IgnoreHolidays { get; set; }
+
         public bool UseMonday { get; set; }
         public bool UseTuesday { get; set; }
         public bool UseThursday { get; set; }
@@ -156,6 +158,7 @@ namespace GlobalApp
             this.AudioFilename = setting.AudioFilename;
             this.ImageFilename = setting.ImageFilename;
             this.Occurrence = setting.Occurrence;
+            this.IgnoreHolidays = setting.IgnoreHolidays;
 
             this.UseMonday = setting.UseMonday;
             this.UseTuesday = setting.UseTuesday;

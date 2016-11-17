@@ -48,6 +48,7 @@
                     <Button x:Name="btnAddNew" HorizontalAlignment="Right" Click="btnAddNew_Click" >
                         <SymbolIcon Symbol="Add" />
                     </Button>
+                    <Button x:Name="btnShowHolidays" Content="Holidays ..." HorizontalAlignment="Left" Click="btnShowHolidays_Click" />
                 </Grid>
             </Grid>
         </Grid>

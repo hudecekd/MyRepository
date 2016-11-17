@@ -111,6 +111,7 @@
     <Compile Include="BaseAlarmSetting.cs" />
     <Compile Include="BaseAlarmSettings.cs" />
     <Compile Include="DayOfWeekType.cs" />
+    <Compile Include="HolidaysApi.cs" />
     <Compile Include="OccurrenceType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\AlarmLibrary.rd.xml" />
