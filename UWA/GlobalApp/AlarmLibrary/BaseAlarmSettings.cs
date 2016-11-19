@@ -28,6 +28,11 @@ namespace AlarmLibrary
         {
         }
 
+        /// <summary>
+        /// Format used to properly serialize <see cref="DateTimeOffset"/> to JSON and back.
+        /// </summary>
+        private const string DateTimeOffsetSerializationFormat = "yyyy-MM-ddTHH:mm:ss.fffffffzzz";
+
         private const string AlarmsKey = "Alarms";
 
         private const string JsonId = "id";
@@ -38,6 +43,7 @@ namespace AlarmLibrary
         private const string JsonImageFilename = "imageFilename";
         private const string JsonOccurrence = "occurrence";
         private const string JsonIgnoreHolidays = "ignoreHolidays";
+        private const string JsonDateTimeOffset = "dateTimeOffset";
 
         #region Holiday
         private const string JsonHolidaysKey = "holidays";
@@ -61,6 +67,7 @@ namespace AlarmLibrary
                 alarmJson[JsonImageFilename] = JsonValue.CreateStringValue(alarm.ImageFilename);
                 alarmJson[JsonOccurrence] = JsonValue.CreateStringValue(alarm.Occurrence.ToString());
                 alarmJson[JsonIgnoreHolidays] = JsonValue.CreateBooleanValue(alarm.IgnoreHolidays);
+                alarmJson[JsonDateTimeOffset] = JsonValue.CreateStringValue(alarm.DateTimeOffset.ToString(System.Globalization.CultureInfo.InvariantCulture));
 
                 alarmsJson.Add(alarmJson);
             }
@@ -147,6 +154,10 @@ namespace AlarmLibrary
                 alarm.AudioFilename = alarmJson[JsonAudioFilename].GetString();
                 alarm.ImageFilename = alarmJson[JsonImageFilename].GetString();
                 alarm.Occurrence = (OccurrenceType)Enum.Parse(typeof(OccurrenceType), alarmJson[JsonOccurrence].GetString());
+
+                // Fix: serialization of DateTimeOffset was missing. I do not want to change "date version" so I just check whether key is available here.
+                if (alarmJson.ContainsKey(JsonDateTimeOffset))
+                    alarm.DateTimeOffset = DateTimeOffset.Parse(alarmJson[JsonDateTimeOffset].GetString(), System.Globalization.CultureInfo.InvariantCulture);
 
                 Alarms.Add(alarm);
             }
