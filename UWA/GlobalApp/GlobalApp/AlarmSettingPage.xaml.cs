@@ -111,6 +111,26 @@ namespace GlobalApp
                 alarmVM.Initialize(setting);
             }
 
+            // TODO: similar code as in ExecuteDeleteCommand method. Use one method for both!
+            #region Refresh Toasts
+            // if alarm was enabled then remove previous alarm toasts and plan it again (maybe time/date or other condition was changed)
+            // so previous toasts can be invalid
+            AlarmManager.Instance.DisableAlarm(setting);
+            if (setting.Enabled) AlarmManager.Instance.EnableAlarm(setting); // anable it if it should be (toasts will be updated = created again)
+
+            // check all alarms and if there is at least one enabled
+            // then show badge
+            var numberOfActiveAlarms = BaseAlarmSettings.Instance.Alarms.Count(a => a.Enabled);
+            if (numberOfActiveAlarms > 0)
+            {
+                BadgeManager.ShowBadge((uint)numberOfActiveAlarms);
+            }
+            else
+            {
+                BadgeManager.HideBadge();
+            }
+            #endregion
+
             Frame.GoBack();
         }
 
