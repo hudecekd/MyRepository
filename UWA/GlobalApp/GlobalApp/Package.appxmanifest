@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="45440DuanHudeek.5995352C980D8" Publisher="CN=EC92A3E8-F9D1-4A47-A577-263911F0F5D4" Version="1.1.25.0" />
+  <Identity Name="45440DuanHudeek.5995352C980D8" Publisher="CN=EC92A3E8-F9D1-4A47-A577-263911F0F5D4" Version="1.1.39.0" />
   <mp:PhoneIdentity PhoneProductId="95538f3f-3b91-4157-b03c-6d1958428c09" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>GlobalAppDusna</DisplayName>
     <PublisherDisplayName>Dušan Hudeček</PublisherDisplayName>
-    <Logo>Assets\StoreLogo.png</Logo>
+    <Logo>Assets\StoreLogoCustom.png</Logo>
   </Properties>
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.0.0" MaxVersionTested="10.0.0.0" />
@@ -26,14 +26,9 @@
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>
-        <Extension Category="windows.backgroundTasks" EntryPoint="ServicingCompleteBackgroundTask.ServicingCompleteBackgroundTask">
+        <Extension Category="windows.backgroundTasks" EntryPoint="PushNotificationsBackgroundTask.PushNotificationsBackgroundTask">
           <BackgroundTasks>
-            <Task Type="systemEvent" />
-          </BackgroundTasks>
-        </Extension>
-        <Extension Category="windows.backgroundTasks" EntryPoint="TileUpdateBackgroundTask.TileUpdateBackgroundTask">
-          <BackgroundTasks>
-            <Task Type="timer" />
+            <Task Type="pushNotification" />
           </BackgroundTasks>
         </Extension>
         <Extension Category="windows.backgroundTasks" EntryPoint="AlarmBackgroundTask.AlarmBackgroundTask">
@@ -41,9 +36,14 @@
             <Task Type="timer" />
           </BackgroundTasks>
         </Extension>
-        <Extension Category="windows.backgroundTasks" EntryPoint="PushNotificationsBackgroundTask.PushNotificationsBackgroundTask">
+        <Extension Category="windows.backgroundTasks" EntryPoint="TileUpdateBackgroundTask.TileUpdateBackgroundTask">
           <BackgroundTasks>
-            <Task Type="pushNotification" />
+            <Task Type="timer" />
+          </BackgroundTasks>
+        </Extension>
+        <Extension Category="windows.backgroundTasks" EntryPoint="ServicingCompleteBackgroundTask.ServicingCompleteBackgroundTask">
+          <BackgroundTasks>
+            <Task Type="systemEvent" />
           </BackgroundTasks>
         </Extension>
       </Extensions>

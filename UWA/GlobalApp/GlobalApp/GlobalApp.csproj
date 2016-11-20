@@ -157,6 +157,7 @@
   <ItemGroup>
     <Content Include="Assets\BadgeLogo.scale-100.png" />
     <Content Include="Assets\BadgeLogo.scale-200.png" />
+    <Content Include="Assets\StoreLogoCustom.png" />
     <Content Include="Images\alarm.png" />
     <Content Include="Audio\01 - My Silver Lining %284%29.mp3" />
     <Content Include="Assets\alarmToast.xml" />

@@ -13,71 +13,73 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Grid Grid.Row="0">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid Margin="0,0,0,10" Grid.Row="0">
-                        <ComboBox x:Name="cmbSounds" SelectedItem="{Binding AudioFilename,Mode=TwoWay}" HorizontalAlignment="Stretch" Margin="0" VerticalAlignment="Top" />
-                    </Grid>
-                    <Grid Grid.Row="1">
-                        <StackPanel Orientation="Vertical">
-                            <TimePicker x:Name="tpTime" Time="{Binding Time, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        </StackPanel>
-                    </Grid>
-                    <Grid Grid.Row="2">
-                        <StackPanel Orientation="Vertical">
-                            <StackPanel Orientation="Horizontal">
-                                <RadioButton x:Name="rbOnlyOnce" IsChecked="{Binding OnlyOnce}" Content="Only Once" Checked="rbOnlyOnce_Checked" />
-                                <RadioButton x:Name="rbRepeatedly" IsChecked="{Binding Repeatedly}" Content="Repeatedly" Checked="rbRepeatedly_Checked" />
+            <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+                <Grid Grid.Row="0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid Margin="0,0,0,10" Grid.Row="0">
+                            <ComboBox x:Name="cmbSounds" SelectedItem="{Binding AudioFilename,Mode=TwoWay}" HorizontalAlignment="Stretch" Margin="0" VerticalAlignment="Top" />
+                        </Grid>
+                        <Grid Grid.Row="1">
+                            <StackPanel Orientation="Vertical">
+                                <TimePicker x:Name="tpTime" Time="{Binding Time, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                             </StackPanel>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-                                <Button Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Content="Select Image ..." x:Name="btnSelectImage" Click="btnSelectImage_Click" />
-                                <ComboBox x:Name="cmbImages" SelectedItem="{Binding ImageFilename,Mode=TwoWay}" Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
-                            </Grid>
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <StackPanel x:Name="spOnlyOnce" Orientation="Horizontal">
-                                    <DatePicker x:Name="dpDate" Date="{Binding DateTimeOffset, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        </Grid>
+                        <Grid Grid.Row="2">
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal">
+                                    <RadioButton x:Name="rbOnlyOnce" IsChecked="{Binding OnlyOnce}" Content="Only Once" Checked="rbOnlyOnce_Checked" />
+                                    <RadioButton x:Name="rbRepeatedly" IsChecked="{Binding Repeatedly}" Content="Repeatedly" Checked="rbRepeatedly_Checked" />
                                 </StackPanel>
-                                <StackPanel x:Name="spRepeatedly" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" >
-                                    <StackPanel.Resources>
-                                        <Style TargetType="CheckBox">
-                                            <Setter Property="Height" Value="40" />
-                                            <Setter Property="VerticalAlignment" Value="Top" />
-                                            <!--<Setter Property="RenderTransform">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Content="Select Image ..." x:Name="btnSelectImage" Click="btnSelectImage_Click" />
+                                    <ComboBox x:Name="cmbImages" SelectedItem="{Binding ImageFilename,Mode=TwoWay}" Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+                                </Grid>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <StackPanel x:Name="spOnlyOnce" Orientation="Horizontal">
+                                        <DatePicker x:Name="dpDate" Date="{Binding DateTimeOffset, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                    </StackPanel>
+                                    <StackPanel x:Name="spRepeatedly" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" >
+                                        <StackPanel.Resources>
+                                            <Style TargetType="CheckBox">
+                                                <Setter Property="Height" Value="40" />
+                                                <Setter Property="VerticalAlignment" Value="Top" />
+                                                <!--<Setter Property="RenderTransform">
                                                 <Setter.Value>
                                                     <ScaleTransform ScaleX="2" ScaleY="2" />
                                                 </Setter.Value>
                                             </Setter>-->
-                                        </Style>
-                                    </StackPanel.Resources>
-                                    <CheckBox IsChecked="{Binding IgnoreHolidays, Mode=TwoWay}" Margin="0,0,0,20"  x:Name="chbIgnoreHolidays" Content="Ignore Holidays"  />
-                                    
-                                    <CheckBox IsChecked="{Binding UseMonday, Mode=TwoWay}"  x:Name="chbMonday" Content="Monday"  />
-                                    <CheckBox IsChecked="{Binding UseTuesday, Mode=TwoWay}"  x:Name="chbTuesday" Content="Tuesday" />
-                                    <CheckBox IsChecked="{Binding UseWednesday, Mode=TwoWay}"  x:Name="chbWednesday" Content="Wednesday" />
-                                    <CheckBox IsChecked="{Binding UseThursday, Mode=TwoWay}"  x:Name="chbThursday" Content="Thursday" />
-                                    <CheckBox IsChecked="{Binding UseFriday, Mode=TwoWay}"  x:Name="chbFriday" Content="Friday" />
-                                    <CheckBox IsChecked="{Binding UseSaturday, Mode=TwoWay}"  x:Name="chbSaturday" Content="Saturday" />
-                                    <CheckBox IsChecked="{Binding UseSunday, Mode=TwoWay}"  x:Name="chbSunday" Content="Sunday" />
-                                </StackPanel>
-                            </Grid>
-                        </StackPanel>
+                                            </Style>
+                                        </StackPanel.Resources>
+                                        <CheckBox IsChecked="{Binding IgnoreHolidays, Mode=TwoWay}" Margin="0,0,0,20"  x:Name="chbIgnoreHolidays" Content="Ignore Holidays"  />
+
+                                        <CheckBox IsChecked="{Binding UseMonday, Mode=TwoWay}"  x:Name="chbMonday" Content="Monday"  />
+                                        <CheckBox IsChecked="{Binding UseTuesday, Mode=TwoWay}"  x:Name="chbTuesday" Content="Tuesday" />
+                                        <CheckBox IsChecked="{Binding UseWednesday, Mode=TwoWay}"  x:Name="chbWednesday" Content="Wednesday" />
+                                        <CheckBox IsChecked="{Binding UseThursday, Mode=TwoWay}"  x:Name="chbThursday" Content="Thursday" />
+                                        <CheckBox IsChecked="{Binding UseFriday, Mode=TwoWay}"  x:Name="chbFriday" Content="Friday" />
+                                        <CheckBox IsChecked="{Binding UseSaturday, Mode=TwoWay}"  x:Name="chbSaturday" Content="Saturday" />
+                                        <CheckBox IsChecked="{Binding UseSunday, Mode=TwoWay}"  x:Name="chbSunday" Content="Sunday" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
                     </Grid>
                 </Grid>
-            </Grid>
+            </ScrollViewer>
             <Grid Grid.Row="1">
                 <Grid.Resources>
                     <Style TargetType="Button">

@@ -44,7 +44,15 @@ namespace GlobalApp
             // register push notifications
             // first before connection check.
             // TODO: improve this mechanism
-            Task.Factory.StartNew(() => InitNotificationsAsync().GetAwaiter().GetResult() ).Wait();
+            // HOTFIX: for now ignore possible errors
+            try
+            {
+                Task.Factory.StartNew(() => InitNotificationsAsync().GetAwaiter().GetResult()).Wait();
+            }
+            catch (Exception ex)
+            {
+                new MessageDialog(ex.Message).ShowAsync();
+            }
             NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
 
             AlarmManager.Instance.CopyAudioFiles();

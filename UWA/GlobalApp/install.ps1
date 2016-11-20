@@ -1,4 +1,4 @@
-$ip = "192.168.0.100"
+$ip = "192.168.0.101"
 [array] $directories = (Get-ChildItem -Path "D:\data\MyRepository\UWA\GlobalApp\GlobalApp\AppPackages" | Where-Object {$_.mode -match "d"} | Select-Object Name)
 
 [string] $bestName = ""

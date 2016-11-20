@@ -20,15 +20,32 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <Grid>
+                <Grid x:Name="gAlarms">
                     <Grid.Resources>
-                        <DataTemplate x:Key="AlarmSettingKey">
-                            <StackPanel>
+                        <DataTemplate x:Name="resourcePortraitTemplate" x:Key="AlarmSettingKey">
+                            <StackPanel Padding="0,10,0,10">
                                 <TextBlock Text="{Binding Time}" />
                                 <!--<ToggleSwitch IsOn="{Binding Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Toggled="ToggleSwitch_Toggled"  />-->
                                 <CheckBox Command="{Binding EnableAlarmCommand}" Content="Enabled" IsChecked="{Binding Enabled, Mode=TwoWay}" />
                                 <TextBlock Text="{Binding Occurrence, Mode=OneWay, Converter={StaticResource OccurrenceToStringConverter}}" />
                                 <TextBlock x:Name="tbDays" Text="{Binding Mode=OneWay, Converter={StaticResource DaysToStringConverter}}" />
+                            </StackPanel>
+                        </DataTemplate>
+
+                        <DataTemplate x:Name="resourceLandscapeTemplate" x:Key="AlarmSettingLandscapeKey">
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Command="{Binding EnableAlarmCommand}" Content="Enabled" IsChecked="{Binding Enabled, Mode=TwoWay}" />
+                                <Border Background="{x:Null}">
+                                    <TextBlock Text="{Binding Time}" VerticalAlignment="Center"  />
+                                </Border>
+                                <!--<ToggleSwitch IsOn="{Binding Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Toggled="ToggleSwitch_Toggled"  />-->
+
+                                <Border Margin="10,0,0,0" Background="{x:Null}">
+                                    <TextBlock Width="100" VerticalAlignment="Center" Text="{Binding Occurrence, Mode=OneWay, Converter={StaticResource OccurrenceToStringConverter}}" />
+                                </Border>
+                                <Border Background="{x:Null}">
+                                    <TextBlock VerticalAlignment="Center" x:Name="tbDays" Text="{Binding Mode=OneWay, Converter={StaticResource DaysToStringConverter}}" />
+                                </Border>
                             </StackPanel>
                         </DataTemplate>
                     </Grid.Resources>

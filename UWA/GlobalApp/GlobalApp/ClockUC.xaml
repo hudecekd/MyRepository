@@ -6,34 +6,36 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    d:DesignHeight="400"
+    d:DesignHeight="500"
     d:DesignWidth="400" Loading="UserControl_Loading" Loaded="UserControl_Loaded">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <StackPanel Orientation="Horizontal">
-            <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="Current Date &amp; Time:" VerticalAlignment="Top"/>
-            <TextBlock x:Name="txtDateTime" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="Value" VerticalAlignment="Top" Height="20"/>
-            <Button Visibility="Collapsed" x:Name="btnCenter" Content="Center" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnCenter_Click" />
-        </StackPanel>
-        <Grid x:Name="gClock"  Margin="0,70,0,0">
-            <Canvas x:Name="cClock">
-                <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="13" Margin="209,152,0,0" Stroke="Black" VerticalAlignment="Top" Width="136">
-                <Rectangle.RenderTransform>
-                <RotateTransform x:Name="rtClockSeconds" CenterX="-20" CenterY="7" Angle="0" />
-            </Rectangle.RenderTransform>
-            </Rectangle>
-            <Rectangle Fill="Green" HorizontalAlignment="Left" Height="13" Margin="209,152,0,0" Stroke="Black" VerticalAlignment="Top" Width="116">
-                <Rectangle.RenderTransform>
-                    <RotateTransform x:Name="rtClockMinutes" CenterX="-20" CenterY="7" Angle="0" />
-                </Rectangle.RenderTransform>
-            </Rectangle>
-            <Rectangle Fill="Red" HorizontalAlignment="Left" Height="13" Margin="209,152,0,0" Stroke="Black" VerticalAlignment="Top" Width="96">
-                <Rectangle.RenderTransform>
-                    <RotateTransform x:Name="rtClockHours" CenterX="-20" CenterY="7" Angle="0" />
-                </Rectangle.RenderTransform>
-            </Rectangle>
-            <Ellipse Fill="Red" HorizontalAlignment="Left" Height="15" Margin="181.5,151,0,0" Stroke="Black" VerticalAlignment="Top" Width="15"/>
-            </Canvas>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid >
+            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Horizontal">
+                <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="Current Date &amp; Time:" VerticalAlignment="Top"/>
+                <TextBlock x:Name="txtDateTime" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="Value" VerticalAlignment="Top" Height="20"/>
+                <Button Visibility="Collapsed" x:Name="btnCenter" Content="Center" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnCenter_Click" />
+            </StackPanel>
+            <Grid  x:Name="gClock" HorizontalAlignment="Left" VerticalAlignment="Top" Width="400" Height="450"  Margin="0,40,0,0">
+                <Canvas x:Name="cClock">
+                    <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="13" Margin="209,202,0,0" Stroke="Black" VerticalAlignment="Top" Width="136">
+                        <Rectangle.RenderTransform>
+                            <RotateTransform x:Name="rtClockSeconds" CenterX="-20" CenterY="7" Angle="0" />
+                        </Rectangle.RenderTransform>
+                    </Rectangle>
+                    <Rectangle Fill="Green" HorizontalAlignment="Left" Height="13" Margin="209,202,0,0" Stroke="Black" VerticalAlignment="Top" Width="116">
+                        <Rectangle.RenderTransform>
+                            <RotateTransform x:Name="rtClockMinutes" CenterX="-20" CenterY="7" Angle="0" />
+                        </Rectangle.RenderTransform>
+                    </Rectangle>
+                    <Rectangle Fill="Red" HorizontalAlignment="Left" Height="13" Margin="209,202,0,0" Stroke="Black" VerticalAlignment="Top" Width="96">
+                        <Rectangle.RenderTransform>
+                            <RotateTransform x:Name="rtClockHours" CenterX="-20" CenterY="7" Angle="0" />
+                        </Rectangle.RenderTransform>
+                    </Rectangle>
+                    <Ellipse Fill="Red" HorizontalAlignment="Left" Height="15" Margin="181.5,201,0,0" Stroke="Black" VerticalAlignment="Top" Width="15"/>
+                </Canvas>
+            </Grid>
         </Grid>
-    </Grid>
+    </ScrollViewer>
 </UserControl>

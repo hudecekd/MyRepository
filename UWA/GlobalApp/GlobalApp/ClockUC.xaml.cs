@@ -63,6 +63,8 @@ namespace GlobalApp
 
         private void UserControl_Loading(FrameworkElement sender, object args)
         {
+            // TODO: baseY + set locations of rectangles and other elemnents.!!!
+            var baseY = 202;
             var r = 190;
             for (var hour = 1; hour <= 12; hour++)
             {
@@ -73,15 +75,15 @@ namespace GlobalApp
                 TextBlock tbHour = new TextBlock();
                 tbHour.Text = hour.ToString();
 
-                // left & top is 152
+                // left & top is baseY
                 // then + half of base rectangle
                 // for now it is ok
                 // TODO: make all coordinates better!!!
-                var centerY = 152 + 13 / 2;
+                var centerY = baseY + 13 / 2;
 
                 var newPoint = new Point();// new Point(left + 189, top + centerY);
 
-                //tbHour.Margin = new Thickness(left + 189, top + 152, 0, 0);
+                //tbHour.Margin = new Thickness(left + 189, top + baseY, 0, 0);
 
                 tbHour.HorizontalAlignment = HorizontalAlignment.Left;
                 tbHour.VerticalAlignment = VerticalAlignment.Top;
@@ -108,7 +110,7 @@ namespace GlobalApp
                 // minus half of height which should make new recangle centered
                 // following rotation should be ok because it shuld be correctly centered
                 // because of base rectangle definition.
-                var y = 152 + 13 / 2 - 5 / 2;
+                var y = baseY + 13 / 2 - 5 / 2;
 
                 var rectangle = new Rectangle();
                 rectangle.Margin = new Thickness(189 + 160, y, 0, 0);
