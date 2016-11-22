@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
 
-namespace ServicingCompleteBackgroundTask
+namespace AlarmLibrary
 {
     public static class AppVersion
     {

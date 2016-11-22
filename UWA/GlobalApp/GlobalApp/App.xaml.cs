@@ -41,6 +41,13 @@ namespace GlobalApp
             this.EnteredBackground += Application_EnteredBackground;
             this.Resuming += App_Resuming;
 
+            // If usre installs app for the first time and "application data version"
+            // is already greater than 0 then we need to set that version
+            // so we will call "update" method.
+            // If app was already installed before then registered BT which is called
+            // after application update will handle the future updates of application data.
+            AlarmLibrary.AppVersion.UpdateSettings();
+
             // register push notifications
             // first before connection check.
             // TODO: improve this mechanism

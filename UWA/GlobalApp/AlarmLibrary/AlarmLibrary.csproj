@@ -108,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlarmManager.cs" />
+    <Compile Include="AppVersion.cs" />
     <Compile Include="BaseAlarmSetting.cs" />
     <Compile Include="BaseAlarmSettings.cs" />
     <Compile Include="DayOfWeekType.cs" />
