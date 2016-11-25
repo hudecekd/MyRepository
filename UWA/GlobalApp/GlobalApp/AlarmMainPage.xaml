@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:Alarm="using:GlobalApp.Converters.Alarm"
     x:Class="GlobalApp.AlarmMainPage"
-    mc:Ignorable="d" Loaded="Page_Loaded">
+    mc:Ignorable="d" Loaded="Page_Loaded" Unloaded="Page_Unloaded">
 
     <Page.Resources>
         <Alarm:OccurrenceToStringConverter x:Key="OccurrenceToStringConverter"/>

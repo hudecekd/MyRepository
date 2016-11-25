@@ -238,6 +238,10 @@
       <Project>{e7edf435-8039-41c1-93b3-d27c11380dce}</Project>
       <Name>AlarmLibrary</Name>
     </ProjectReference>
+    <ProjectReference Include="..\AlarmToastBackgroundTask\AlarmToastBackgroundTask.csproj">
+      <Project>{997286fe-032b-4b3b-801c-7a64e6f165ba}</Project>
+      <Name>AlarmToastBackgroundTask</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PushNotificationsBackgroundTask\PushNotificationsBackgroundTask.csproj">
       <Project>{8377fb60-0b69-4b18-b371-92930d94c13c}</Project>
       <Name>PushNotificationsBackgroundTask</Name>

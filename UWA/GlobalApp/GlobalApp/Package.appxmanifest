@@ -26,14 +26,14 @@
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>
-        <Extension Category="windows.backgroundTasks" EntryPoint="ServicingCompleteBackgroundTask.ServicingCompleteBackgroundTask">
+        <Extension Category="windows.backgroundTasks" EntryPoint="AlarmToastBackgroundTask.AlarmToastBackgroundTask">
           <BackgroundTasks>
             <Task Type="systemEvent" />
           </BackgroundTasks>
         </Extension>
-        <Extension Category="windows.backgroundTasks" EntryPoint="TileUpdateBackgroundTask.TileUpdateBackgroundTask">
+        <Extension Category="windows.backgroundTasks" EntryPoint="PushNotificationsBackgroundTask.PushNotificationsBackgroundTask">
           <BackgroundTasks>
-            <Task Type="timer" />
+            <Task Type="pushNotification" />
           </BackgroundTasks>
         </Extension>
         <Extension Category="windows.backgroundTasks" EntryPoint="AlarmBackgroundTask.AlarmBackgroundTask">
@@ -41,9 +41,14 @@
             <Task Type="timer" />
           </BackgroundTasks>
         </Extension>
-        <Extension Category="windows.backgroundTasks" EntryPoint="PushNotificationsBackgroundTask.PushNotificationsBackgroundTask">
+        <Extension Category="windows.backgroundTasks" EntryPoint="TileUpdateBackgroundTask.TileUpdateBackgroundTask">
           <BackgroundTasks>
-            <Task Type="pushNotification" />
+            <Task Type="timer" />
+          </BackgroundTasks>
+        </Extension>
+        <Extension Category="windows.backgroundTasks" EntryPoint="ServicingCompleteBackgroundTask.ServicingCompleteBackgroundTask">
+          <BackgroundTasks>
+            <Task Type="systemEvent" />
           </BackgroundTasks>
         </Extension>
       </Extensions>

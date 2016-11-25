@@ -211,7 +211,7 @@ namespace AlarmLibrary
             }
         }
 
-        private void CreateNotification(int alarmId, string audioFile, string imageFile, DateTime dateTime)
+        public void CreateNotification(int alarmId, string audioFile, string imageFile, DateTime dateTime)
         {
             var audioFileUriString = $"ms-appdata:///local/{AudioFolderName}/{audioFile}"; // file is copied to local folder so we use different prefix
             var toastXmlContent = CreateToastXml(ToastDuration.Long, audioFileUriString, false, imageFile, alarmId.ToString());
@@ -315,8 +315,10 @@ namespace AlarmLibrary
                     Buttons =
                     {
                         new ToastButton("Configure Alarm", $"alarmAction;{alarmAction}") { ImageUri = "check.png" },
-                        new ToastButtonSnooze() { SelectionBoxId = snoozeTimeId },
-                        new ToastButtonDismiss()
+                        //new ToastButtonSnooze() {  SelectionBoxId = snoozeTimeId },
+                        //new ToastButtonDismiss()
+                        new ToastButton("My Snooze",$"snooze:{alarmAction}") {ActivationType = ToastActivationType.Background  },
+                        new ToastButton("My Dismiss", $"dismiss:{alarmAction}") {ActivationType = ToastActivationType.Background }
                     }
                 },
                 Audio = new ToastAudio() { Src = new Uri(audioPath), Loop = loop }

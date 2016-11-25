@@ -30,6 +30,11 @@ namespace GlobalApp
     /// </summary>
     sealed partial class App : Application
     {
+        public static App CurrentApp
+        {
+            get { return (App)App.Current; }
+        }
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -40,6 +45,12 @@ namespace GlobalApp
             this.Suspending += OnSuspending;
             this.EnteredBackground += Application_EnteredBackground;
             this.Resuming += App_Resuming;
+
+            // App was started again. We have to register again to get notifications that BT has completed.
+            BackgroundTaskHelper.TryRegisterCompletedHandler("AlarmToastBackgroundTask", (s, e) =>
+            {
+                App.CurrentApp.OnToastBackgroundTaskCompleted();
+            });
 
             // If usre installs app for the first time and "application data version"
             // is already greater than 0 then we need to set that version
@@ -85,6 +96,13 @@ namespace GlobalApp
                 // TODO: handle exception
             }
         }
+
+        public void OnToastBackgroundTaskCompleted()
+        {
+            ToastBackgroundTaskCompleted(null, EventArgs.Empty);
+        }
+
+        public event EventHandler ToastBackgroundTaskCompleted = (s, e) => { };
 
         private void App_Resuming(object sender, object e)
         {
@@ -150,16 +168,33 @@ namespace GlobalApp
             {
                 if (args.Kind == ActivationKind.ToastNotification)
                 {
+                    // TODO: distinguish different toasts (alarm, holiday and others)
                     var toastArgs = args as ToastNotificationActivatedEventArgs;
-                    var argumentParts = toastArgs.Argument.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
-                    var argumentAction = argumentParts[0];
-                    var alarmId = int.Parse(argumentParts[1]);
+                    var alarmIdStr = toastArgs.Argument;
+                    var alarmId = int.Parse(alarmIdStr);
+                    var snoozeTimeStr = toastArgs.UserInput["snoozeTimeId"].ToString();
+                    var snoozeTimeSeconds = int.Parse(snoozeTimeStr);
 
-                    var rootFrame = Window.Current.Content as Frame;
-                    var content = rootFrame.Content;
-                    var mainPage = content as MainPage;
-                    mainPage.OpenAlarmSetting(alarmId);
+                    var alarm = BaseAlarmSettings.Instance.Alarms.Single(a => a.Id == alarmId);
+                    var dateTime = DateTimeOffset.Now.DateTime.Add(TimeSpan.FromMinutes(snoozeTimeSeconds));
+                    //if (!CheckAlarmDateTime(dateTime)) return;
+
+                    AlarmManager.Instance.CreateNotification(alarm.Id, alarm.AudioFilename, alarm.ImageFilename, dateTime.ToUniversalTime());
                 }
+
+
+                //if (args.Kind == ActivationKind.ToastNotification)
+                //{
+                //    var toastArgs = args as ToastNotificationActivatedEventArgs;
+                //    var argumentParts = toastArgs.Argument.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+                //    var argumentAction = argumentParts[0];
+                //    var alarmId = int.Parse(argumentParts[1]);
+
+                //    var rootFrame = Window.Current.Content as Frame;
+                //    var content = rootFrame.Content;
+                //    var mainPage = content as MainPage;
+                //    mainPage.OpenAlarmSetting(alarmId);
+                //}
 
                 base.OnActivated(args);
             }

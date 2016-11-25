@@ -36,7 +36,8 @@
                 <Button x:Name="btnBadge" Content="Create Badge" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnBadge_Click"/>
         <Button x:Name="btnBadgeNumber" Content="Budge Number" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="btnBadgeNumber_Click"/>
         <Button x:Name="btnCleraBadge" Content="Clear Badge" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="btnCleraBadge_Click"/>
-        <Button x:Name="btnRegisterPushBT" Content="Register Push BT" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top" Click="btnRegisterPushBT_Click"/>
+                <Button x:Name="btnRegisterToastBT" Content="Register Toast BT" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top" Click="btnRegisterToastBT_Click"/>
+                <Button x:Name="btnRegisterPushBT" Content="Register Push BT" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top" Click="btnRegisterPushBT_Click"/>
             <StackPanel Orientation="Horizontal">
                 <Button x:Name="btnGetChannelUri" Content="Get Channel Uri" HorizontalAlignment="Stretch" Margin="0" VerticalAlignment="Stretch" Click="btnGetChannelUri_Click"/>
                 <TextBox HorizontalAlignment="Stretch" VerticalAlignment="Top" x:Name="txtChannelUri" />

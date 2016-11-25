@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E7EDF435-8039-41C1-93B3-D27C11380DCE}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{997286FE-032B-4B3B-801C-7A64E6F165BA}</ProjectGuid>
+    <OutputType>winmdobj</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AlarmLibrary</RootNamespace>
-    <AssemblyName>AlarmLibrary</AssemblyName>
+    <RootNamespace>AlarmToastBackgroundTask</RootNamespace>
+    <AssemblyName>AlarmToastBackgroundTask</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
@@ -16,6 +16,7 @@
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <AllowCrossPlatformRetargeting>false</AllowCrossPlatformRetargeting>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -107,20 +108,18 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AlarmManager.cs" />
-    <Compile Include="AlarmToastArgument.cs" />
-    <Compile Include="AlarmToastSyncData.cs" />
-    <Compile Include="BackgroundTaskHelper.cs" />
-    <Compile Include="TestApplicationInfo.cs" />
-    <Compile Include="AppVersion.cs" />
-    <Compile Include="BaseAlarmSetting.cs" />
-    <Compile Include="BaseAlarmSettings.cs" />
-    <Compile Include="DayOfWeekType.cs" />
-    <Compile Include="HolidaysApi.cs" />
-    <Compile Include="MutexWrapper.cs" />
-    <Compile Include="OccurrenceType.cs" />
+    <Compile Include="AlarmToastBackgroundTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Properties\AlarmLibrary.rd.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AlarmBackgroundTask\AlarmBackgroundTask.csproj">
+      <Project>{fe617dd8-25b6-470e-9f02-14f756bf22aa}</Project>
+      <Name>AlarmBackgroundTask</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AlarmLibrary\AlarmLibrary.csproj">
+      <Project>{E7EDF435-8039-41C1-93B3-D27C11380DCE}</Project>
+      <Name>AlarmLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AlarmLibrary;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -66,112 +67,11 @@ namespace GlobalApp
             }
         }
 
-        private bool IsTaskRegistered(string taskName)
-        {
-            var taskRegistered = false;
-
-            foreach (var task in BackgroundTaskRegistration.AllTasks)
-            {
-                if (task.Value.Name == taskName)
-                {
-                    taskRegistered = true;
-                    break;
-                }
-            }
-            return taskRegistered;
-        }
-
         private async void btnRegisterBackgroundTask_Click(object sender, RoutedEventArgs e)
         {
-            await RegisterTimerBackgroundTask(TaskName, TaskAssemblyName, 15);
+            await BackgroundTaskHelper.RegisterTask(TaskName, TaskAssemblyName, new TimeTrigger(15, false));
         }
 
-        private async Task RegisterTimerBackgroundTask(string taskName, string taskAssemblyName, uint interval)
-        { 
-            var taskRegistered = IsTaskRegistered(taskName);
-
-            if (!taskRegistered)
-            {
-                //required call
-                var access = await BackgroundExecutionManager.RequestAccessAsync();
-
-                tbRegistration.Text = "";
-                //abort if access isn't granted
-                if (access == BackgroundAccessStatus.DeniedByUser || access == BackgroundAccessStatus.DeniedBySystemPolicy)
-                {
-                    tbRegistration.Text = "Denied";
-                    return;
-                }
-                tbRegistration.Text = "Allowed";
-
-                var builder = new BackgroundTaskBuilder();
-
-                builder.Name = taskName;
-                builder.TaskEntryPoint = taskAssemblyName + "." + taskName;
-                builder.SetTrigger(new TimeTrigger(interval, false));
-                builder.Register();
-            }
-        }
-
-        private async Task RegisterPushBackgroundTask(string taskName, string taskAssemblyName)
-        {
-            var taskRegistered = IsTaskRegistered(taskName);
-
-            if (!taskRegistered)
-            {
-                //required call
-                var access = await BackgroundExecutionManager.RequestAccessAsync();
-
-                tbRegistration.Text = "";
-                //abort if access isn't granted
-                if (access == BackgroundAccessStatus.DeniedByUser || access == BackgroundAccessStatus.DeniedBySystemPolicy)
-                {
-                    tbRegistration.Text = "Denied";
-                    return;
-                }
-                tbRegistration.Text = "Allowed";
-
-                var builder = new BackgroundTaskBuilder();
-
-                builder.Name = taskName;
-                builder.TaskEntryPoint = taskAssemblyName + "." + taskName;
-                builder.SetTrigger(new PushNotificationTrigger());
-
-                builder.Register();
-            }
-        }
-
-        private async Task RegisterBackgroundTask(string taskName, string taskAssemblyName, params IBackgroundTrigger[] triggers)
-        {
-            var taskRegistered = IsTaskRegistered(taskName);
-
-            if (!taskRegistered)
-            {
-                //required call
-                var access = await BackgroundExecutionManager.RequestAccessAsync();
-
-                tbRegistration.Text = "";
-                //abort if access isn't granted
-                if (access == BackgroundAccessStatus.DeniedByUser || access == BackgroundAccessStatus.DeniedBySystemPolicy)
-                {
-                    tbRegistration.Text = "Denied";
-                    return;
-                }
-                tbRegistration.Text = "Allowed";
-
-                var builder = new BackgroundTaskBuilder();
-
-                builder.Name = taskName;
-                builder.TaskEntryPoint = taskAssemblyName + "." + taskName;
-
-                foreach (var trigger in triggers)
-                {
-                    builder.SetTrigger(trigger);
-                }
-
-                builder.Register();
-            }
-        }
 
         private void btnUnregisterBackgroundTask_Click(object sender, RoutedEventArgs e)
         {
@@ -215,12 +115,12 @@ namespace GlobalApp
         private async void btnRegisterAlarmWatcher_Click(object sender, RoutedEventArgs e)
         {
             // TODO: change interval to at least 1 day
-            await RegisterTimerBackgroundTask(AlarmTaskName, AlarmAssemblyName, 15);
+            await BackgroundTaskHelper.RegisterTask(AlarmTaskName, AlarmAssemblyName, new TimeTrigger(15, false));
         }
 
         private void btnBadge_Click(object sender, RoutedEventArgs e)
         {
-            XmlDocument badgeXml =   BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeGlyph);
+            XmlDocument badgeXml = BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeGlyph);
             XmlElement badgeElement = (XmlElement)badgeXml.SelectSingleNode("/badge");
             badgeElement.SetAttribute("value", "alarm");
             BadgeNotification badge = new BadgeNotification(badgeXml);
@@ -230,8 +130,7 @@ namespace GlobalApp
 
         private void btnBadgeNumber_Click(object sender, RoutedEventArgs e)
         {
-            XmlDocument badgeXml =
- BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeNumber);
+            XmlDocument badgeXml = BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeNumber);
             XmlElement badgeElement = (XmlElement)badgeXml.SelectSingleNode("/badge");
             badgeElement.SetAttribute("value", "23");
             BadgeNotification badge = new BadgeNotification(badgeXml);
@@ -240,8 +139,7 @@ namespace GlobalApp
 
         private void btnCleraBadge_Click(object sender, RoutedEventArgs e)
         {
-            XmlDocument badgeXml =
-BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeNumber);
+            XmlDocument badgeXml = BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeNumber);
             XmlElement badgeElement = (XmlElement)badgeXml.SelectSingleNode("/badge");
             badgeElement.SetAttribute("value", "0");
             BadgeNotification badge = new BadgeNotification(badgeXml);
@@ -251,7 +149,7 @@ BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeNumber);
         private async void btnRegisterPushBT_Click(object sender, RoutedEventArgs e)
         {
             btnRegisterPushBT.IsEnabled = false;
-            await RegisterPushBackgroundTask(PushTaskName, PushAssemblyName);
+            await BackgroundTaskHelper.RegisterTask(PushTaskName, PushAssemblyName, new PushNotificationTrigger());
             btnRegisterPushBT.IsEnabled = true;
         }
 
@@ -271,7 +169,7 @@ BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeNumber);
 
         private async void btnRegisterServicingComplete_Click(object sender, RoutedEventArgs e)
         {
-            await RegisterBackgroundTask(
+            await BackgroundTaskHelper.RegisterTask(
                 ServicingCompleteTaskName,
                 ServicingCompleteAssemblyName,
                 new SystemTrigger(SystemTriggerType.ServicingComplete, oneShot: false));
@@ -286,8 +184,25 @@ BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeNumber);
         {
             foreach (var task in BackgroundTaskRegistration.AllTasks.Values.ToList())
             {
-                task.Unregister(cancelTask:false);
+                task.Unregister(cancelTask: false);
             }
+        }
+
+        private async void btnRegisterToastBT_Click(object sender, RoutedEventArgs e)
+        {
+            await BackgroundTaskHelper.RegisterTask(
+                "AlarmToastBackgroundTask",
+                "AlarmToastBackgroundTask",
+                (s, args) =>
+                {
+                    App.CurrentApp.OnToastBackgroundTaskCompleted();
+                    // TODO: update alarm ui
+                    // We do not know which alarm occured
+                    // What if different toasts uccur? IT does not have to be onlye alarm toasts? How to distinguish between them?
+                    // We do not know whether snooze or dismiss occured.
+                    // Maybe we should share data in local settings about what happened?
+                }
+                , new ToastNotificationActionTrigger());
         }
     }
 }

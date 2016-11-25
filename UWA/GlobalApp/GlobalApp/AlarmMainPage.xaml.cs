@@ -8,6 +8,7 @@ using System.Windows.Input;
 using Windows.Devices.Sensors;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -26,7 +27,7 @@ namespace GlobalApp
     /// </summary>
     public sealed partial class AlarmMainPage : Page
     {
-        SimpleOrientationSensor _sensor;
+        static SimpleOrientationSensor _sensor;
 
         public AlarmMainPage()
         {
@@ -38,6 +39,17 @@ namespace GlobalApp
             //}
 
             // initialize VM
+            InitializeAlarmsVMs();
+
+            _sensor = SimpleOrientationSensor.GetDefault();
+            if (_sensor != null) // for example PC does not have to have sensor
+            {
+                _sensor.OrientationChanged += Sensor_OrientationChanged;
+            }
+        }
+
+        private void InitializeAlarmsVMs()
+        {
             AlarmSettingsVM.Instance.Alarms.Clear(); // occurs whenever we naviage to this page so we need to clear singleton
             foreach (var setting in BaseAlarmSettings.Instance.Alarms)
             {
@@ -45,12 +57,40 @@ namespace GlobalApp
                 alarmVM.Initialize(setting);
                 AlarmSettingsVM.Instance.Alarms.Add(alarmVM);
             }
+        }
 
-            _sensor = SimpleOrientationSensor.GetDefault();
-            if (_sensor != null) // for example PC does not have to have sensor
+        private void InitializeAlarmVM(int alarmId)
+        {
+            var setting = BaseAlarmSettings.Instance.Alarms.Single(a => a.Id == alarmId);
+            var alarmVM  = AlarmSettingsVM.Instance.Alarms.Single(a => a.Id == setting.Id);
+            alarmVM.Initialize(setting);
+        }
+
+        private async void App_ToastBackgroundTaskCompleted(object sender, EventArgs e)
+        {
+            string serializedObject;
+            using (var mutex = new MutexWrapper(TimeSpan.FromSeconds(5), TestApplicationInfo.ApplicationId, AlarmToastSyncData.SyncName))
             {
-                _sensor.OrientationChanged += Sensor_OrientationChanged;
+                serializedObject = (string)ApplicationData.Current.LocalSettings.Values[AlarmToastSyncData.SyncKey];
+                ApplicationData.Current.LocalSettings.Values.Remove(AlarmToastSyncData.SyncKey);
             }
+
+            var syncData = new AlarmToastSyncData();
+            syncData.Deserialize(serializedObject);
+
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                switch (syncData.Type)
+                {
+                    case AlarmToastSyncData.ToastType.Dismiss:
+                        BaseAlarmSettings.Instance.LoadSettings(); // load current settings
+                        InitializeAlarmVM(syncData.AlarmId);
+                        break;
+                    case AlarmToastSyncData.ToastType.Snooze:
+                        // there is nothing to be done for snooze
+                        break;
+                }
+            });
         }
 
         private void Sensor_OrientationChanged(SimpleOrientationSensor sender, SimpleOrientationSensorOrientationChangedEventArgs args)
@@ -76,6 +116,8 @@ namespace GlobalApp
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            App.CurrentApp.ToastBackgroundTaskCompleted += App_ToastBackgroundTaskCompleted;
+
             lvAlarms.DataContext = AlarmSettingsVM.Instance.Alarms;
         }
 
@@ -128,6 +170,11 @@ namespace GlobalApp
         {
             var holidaysDialog = new HolidaysDialog();
             await holidaysDialog.ShowAsync();
+        }
+
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            App.CurrentApp.ToastBackgroundTaskCompleted -= App_ToastBackgroundTaskCompleted;
         }
     }
 }
