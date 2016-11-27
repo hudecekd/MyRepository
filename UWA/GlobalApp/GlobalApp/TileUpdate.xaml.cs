@@ -72,7 +72,7 @@ namespace GlobalApp
 
             foreach (var task in BackgroundTaskRegistration.AllTasks)
             {
-                if (task.Value.Name == TaskName)
+                if (task.Value.Name == taskName)
                 {
                     taskRegistered = true;
                     break;
@@ -280,6 +280,14 @@ BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeNumber);
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             tbServicingCompleteLastRun.Text = AlarmLibrary.BaseAlarmSettings.Instance.ServicingCompleteLastRun.ToString();
+        }
+
+        private void btnUnregisterAllBTs_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var task in BackgroundTaskRegistration.AllTasks.Values.ToList())
+            {
+                task.Unregister(cancelTask:false);
+            }
         }
     }
 }

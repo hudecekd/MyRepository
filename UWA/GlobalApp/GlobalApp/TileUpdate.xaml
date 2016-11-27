@@ -24,7 +24,8 @@
             <Button x:Name="btnPlanUpdates" Content="Plan Updates" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnPlanUpdates_Click"/>
         <Button x:Name="btnRegisterBackgroundTask" Content="Register Background Task" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="-0.334,-0.204" Click="btnRegisterBackgroundTask_Click"/>
         <Button x:Name="btnUnregisterBackgroundTask" Content="Unregister Background Task" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnUnregisterBackgroundTask_Click"/>
-        <TextBlock x:Name="tbRegistration" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
+         <Button x:Name="btnUnregisterAllBTs" Content="Unregister All BTs" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnUnregisterAllBTs_Click"/>
+                <TextBlock x:Name="tbRegistration" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
         
         <Button x:Name="btnClearScheduled" Content="Clear" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnClearScheduled_Click"/>
         <Button x:Name="btnRegisterAlarmWatcher" Content="Register Alarm Watcher BT" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="btnRegisterAlarmWatcher_Click"/>
